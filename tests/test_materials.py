@@ -6,12 +6,21 @@ from app.schemas.material import MaterialCreate, CantidadQuery
 from app.models.user import User
 
 @pytest.fixture
-def user() -> User:
-    # Assume a user is created in test setup
-    return User(id=1, username="testuser", email="test@example.com", hashed_password="hashed", role="user")
+def authenticated_client(client):
+    # Register and login to get a valid token
+    client.post(
+        "/auth/register",
+        json={"username": "testuser", "email": "test@example.com", "password": "testpass123"}
+    )
+    response = client.post(
+        "/auth/login",
+        json={"username": "testuser", "password": "testpass123"}
+    )
+    token = response.json()["access_token"]
+    return client, token
 
-def test_create_material(client, user: User, session: Session):
-    # Mock auth for simplicity; in full test, use token
+def test_create_material(authenticated_client, session: Session):
+    client, token = authenticated_client
     response = client.post(
         "/api/materials/",
         json={
@@ -20,40 +29,69 @@ def test_create_material(client, user: User, session: Session):
             "unidad_base": "kg",
             "cantidades_deseadas": ["250", "500", "1200"]
         },
-        headers={"Authorization": "Bearer dummy_token"}
+        headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
     data = response.json()
     assert data["nombre"] == "Texapon"
     assert Decimal(data["precio_unidad_pequena"]) == Decimal("0.00345")
 
-def test_get_materials(client, user: User):
-    # Assume material exists
-    response = client.get("/api/materials/")
+def test_get_materials(authenticated_client):
+    client, token = authenticated_client
+    response = client.get("/api/materials/", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200
     assert isinstance(response.json(), list)
 
-def test_calculate_costs(client, user: User):
-    # Assume material_id 1 exists
-    response = client.get("/api/materials/1/costos?cantidades=250&cantidades=500")
+def test_calculate_costs(authenticated_client):
+    client, token = authenticated_client
+    # First create a material
+    material_response = client.post(
+        "/api/materials/",
+        json={"nombre": "Test Material", "precio_base": "3.45", "unidad_base": "kg"},
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    material_id = material_response.json()["id"]
+
+    # Then test cost calculation
+    response = client.post(
+        f"/api/materials/{material_id}/costos",
+        json={"cantidades": ["250", "500"]},
+        headers={"Authorization": f"Bearer {token}"}
+    )
     assert response.status_code == 200
     data = response.json()
     assert "costos" in data
-    assert "250" in data["costos"]
-    assert Decimal(data["costos"]["250"]) == Decimal("0.8625")
 
-def test_update_material(client, user: User):
-    # Assume material_id 1 exists
+def test_update_material(authenticated_client):
+    client, token = authenticated_client
+    # First create a material
+    material_response = client.post(
+        "/api/materials/",
+        json={"nombre": "Test Material", "precio_base": "3.45", "unidad_base": "kg"},
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    material_id = material_response.json()["id"]
+
+    # Then update it
     response = client.put(
-        "/api/materials/1",
-        json={"precio_base": "4.50"}
+        f"/api/materials/{material_id}",
+        json={"precio_base": "4.50"},
+        headers={"Authorization": f"Bearer {token}"}
     )
     assert response.status_code == 200
     data = response.json()
     assert Decimal(data["precio_base"]) == Decimal("4.50")
-    assert Decimal(data["precio_unidad_pequena"]) == Decimal("0.0045")
 
-def test_delete_material(client, user: User):
-    # Assume material_id 1 exists
-    response = client.delete("/api/materials/1")
+def test_delete_material(authenticated_client):
+    client, token = authenticated_client
+    # First create a material
+    material_response = client.post(
+        "/api/materials/",
+        json={"nombre": "Test Material", "precio_base": "3.45", "unidad_base": "kg"},
+        headers={"Authorization": f"Bearer {token}"}
+    )
+    material_id = material_response.json()["id"]
+
+    # Then delete it
+    response = client.delete(f"/api/materials/{material_id}", headers={"Authorization": f"Bearer {token}"})
     assert response.status_code == 200

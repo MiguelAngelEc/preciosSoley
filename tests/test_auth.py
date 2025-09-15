@@ -11,6 +11,12 @@ def test_register_user(client):
     assert "id" in data
 
 def test_register_duplicate_user(client):
+    # First register a user
+    client.post(
+        "/auth/register",
+        json={"username": "testuser", "email": "test@example.com", "password": "testpass123"}
+    )
+    # Try to register with same username
     response = client.post(
         "/auth/register",
         json={"username": "testuser", "email": "test2@example.com", "password": "testpass123"}
@@ -19,6 +25,12 @@ def test_register_duplicate_user(client):
     assert "already registered" in response.json()["detail"]
 
 def test_login(client):
+    # First register a user
+    client.post(
+        "/auth/register",
+        json={"username": "testuser", "email": "test@example.com", "password": "testpass123"}
+    )
+    # Then login
     response = client.post(
         "/auth/login",
         json={"username": "testuser", "password": "testpass123"}
