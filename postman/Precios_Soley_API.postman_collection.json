@@ -1,0 +1,549 @@
+{
+	"info": {
+		"_postman_id": "b5d8a4f5-2c7e-4d9f-8b5a-7f4e3d2c1a0b",
+		"name": "Precios Soley API",
+		"description": "Colección completa para probar la API de gestión de materiales y precios",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8001",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "material_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "🔐 Autenticación",
+			"item": [
+				{
+					"name": "Registrar Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"User created successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('username');",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"    pm.expect(jsonData).to.have.property('role');",
+									"    ",
+									"    // Guardar user_id para uso posterior",
+									"    pm.collectionVariables.set('user_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Usuario",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Login successful and token received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('access_token');",
+									"    pm.expect(jsonData).to.have.property('token_type');",
+									"    pm.expect(jsonData.token_type).to.eql('bearer');",
+									"    ",
+									"    // Guardar el token para uso en otros requests",
+									"    pm.collectionVariables.set('access_token', jsonData.access_token);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🧱 Materiales",
+			"item": [
+				{
+					"name": "Crear Material",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Material created successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('nombre');",
+									"    pm.expect(jsonData).to.have.property('precio_base');",
+									"    pm.expect(jsonData).to.have.property('unidad_base');",
+									"    pm.expect(jsonData).to.have.property('precio_unidad_pequena');",
+									"    pm.expect(jsonData).to.have.property('is_active');",
+									"    ",
+									"    // Guardar material_id para uso posterior",
+									"    pm.collectionVariables.set('material_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Cemento Portland\",\n  \"precio_base\": 15.50,\n  \"unidad_base\": \"kg\",\n  \"cantidades_deseadas\": [1, 5, 10, 25, 50]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/materials/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Materiales",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Materials list received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"    ",
+									"    if (jsonData.length > 0) {",
+									"        pm.expect(jsonData[0]).to.have.property('id');",
+									"        pm.expect(jsonData[0]).to.have.property('nombre');",
+									"        pm.expect(jsonData[0]).to.have.property('precio_base');",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/materials/?skip=0&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								""
+							],
+							"query": [
+								{
+									"key": "skip",
+									"value": "0"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtener Material por ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Material details received\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('nombre');",
+									"    pm.expect(jsonData).to.have.property('precio_base');",
+									"    pm.expect(jsonData).to.have.property('unidad_base');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/materials/{{material_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								"{{material_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Actualizar Material",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Material updated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('nombre');",
+									"    pm.expect(jsonData).to.have.property('precio_base');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Cemento Portland Premium\",\n  \"precio_base\": 17.75,\n  \"unidad_base\": \"kg\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/materials/{{material_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								"{{material_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Calcular Costos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Costs calculated successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('material');",
+									"    pm.expect(jsonData).to.have.property('costos');",
+									"    pm.expect(jsonData.costos).to.be.an('object');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cantidades\": [1, 5, 10, 25, 50, 100]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/materials/{{material_id}}/costos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								"{{material_id}}",
+								"costos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Eliminar Material",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Material deleted successfully\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/materials/{{material_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								"{{material_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🧪 Ejemplos de Materiales",
+			"item": [
+				{
+					"name": "Crear Cemento",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Cemento Portland\",\n  \"precio_base\": 15.50,\n  \"unidad_base\": \"kg\",\n  \"cantidades_deseadas\": [1, 5, 10, 25, 50]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/materials/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Arena",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Arena de río\",\n  \"precio_base\": 8.75,\n  \"unidad_base\": \"kg\",\n  \"cantidades_deseadas\": [10, 25, 50, 100, 500]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/materials/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Crear Pintura",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nombre\": \"Pintura látex blanca\",\n  \"precio_base\": 25.00,\n  \"unidad_base\": \"litros\",\n  \"cantidades_deseadas\": [1, 4, 10, 20]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/materials/",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"materials",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
