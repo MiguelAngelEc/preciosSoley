@@ -10,8 +10,8 @@ from ..schemas.material import MaterialCreate, MaterialUpdate, MaterialResponse,
 from ..utils.calculator import calcular_precio_unidad_pequena
 
 def create_material(db: Session, material: MaterialCreate, user: User) -> MaterialResponse:
-    # Validate uniqueness per user
-    existing = db.query(Material).filter(Material.nombre == material.nombre, Material.user_id == user.id).first()
+    # Validate uniqueness per user (only check active materials)
+    existing = db.query(Material).filter(Material.nombre == material.nombre, Material.user_id == user.id, Material.is_active == True).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Material name already exists for this user")
     
@@ -60,7 +60,7 @@ def delete_material(db: Session, material_id: int, user: User) -> bool:
     material = db.query(Material).filter(Material.id == material_id, Material.user_id == user.id).first()
     if not material:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Material not found")
-    material.is_active = False
+    db.delete(material)
     db.commit()
     return True
 
