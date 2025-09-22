@@ -51,6 +51,8 @@ export interface Product {
   id: number;
   nombre: string;
   costo_total: string;
+  iva_percentage: number;
+  iva_amount: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -59,6 +61,7 @@ export interface Product {
 
 export interface ProductCreate {
   nombre: string;
+  iva_percentage?: number;
   product_materials: ProductMaterialCreate[];
 }
 
@@ -69,6 +72,7 @@ export interface ProductMaterialCreate {
 
 export interface ProductUpdate {
   nombre?: string;
+  iva_percentage?: number;
   product_materials?: ProductMaterialCreate[];
 }
 

@@ -48,6 +48,7 @@ class ProductMaterialResponse(BaseModel):
 
 class ProductBase(BaseModel):
     nombre: str
+    iva_percentage: float = 21.0
 
 
 class ProductCreate(ProductBase):
@@ -56,6 +57,7 @@ class ProductCreate(ProductBase):
 
 class ProductUpdate(BaseModel):
     nombre: Optional[str] = None
+    iva_percentage: Optional[float] = None
     product_materials: Optional[List[ProductMaterialCreate]] = None
 
 
@@ -63,6 +65,8 @@ class ProductResponse(BaseModel):
     id: int
     nombre: str
     costo_total: Decimal
+    iva_percentage: float
+    iva_amount: Decimal
     is_active: bool
     created_at: datetime
     updated_at: datetime

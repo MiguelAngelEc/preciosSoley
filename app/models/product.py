@@ -2,8 +2,10 @@ from datetime import datetime
 from decimal import Decimal
 from sqlalchemy import Column, Integer, String, Numeric, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from .base import BaseEntity
+from ..config import settings
 
 
 class Product(BaseEntity):
@@ -11,6 +13,7 @@ class Product(BaseEntity):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     nombre = Column(String, nullable=False)
+    # iva_percentage = Column(Numeric(5, 2), nullable=True, default=21.0)  # IVA percentage for calculation
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
@@ -25,6 +28,12 @@ class Product(BaseEntity):
             if pm.material and pm.material.is_active:
                 total += pm.material.calcular_precio_cantidad(pm.cantidad)
         return total
+
+    @hybrid_property
+    def iva_amount(self) -> Decimal:
+        """Calculate IVA amount based on total cost with default 21%"""
+        costo_total = self.calcular_costo_total()
+        return costo_total * Decimal(21.0 / 100)  # Default 21%
 
 
 class ProductMaterial(BaseEntity):

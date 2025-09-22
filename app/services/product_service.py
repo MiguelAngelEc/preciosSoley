@@ -153,6 +153,9 @@ def update_product(db: Session, product_id: int, product_update: ProductUpdate, 
                 )
         product.nombre = product_update.nombre
 
+    if product_update.iva_percentage is not None:
+        product.iva_percentage = product_update.iva_percentage
+
     # Update materials if provided
     if product_update.product_materials is not None:
         # Remove existing materials
@@ -368,6 +371,8 @@ def _build_product_response(product: Product) -> ProductResponse:
         id=product.id,
         nombre=product.nombre,
         costo_total=product.calcular_costo_total(),
+        iva_percentage=21.0,  # Fixed for now
+        iva_amount=product.iva_amount,
         is_active=product.is_active,
         created_at=product.created_at,
         updated_at=product.updated_at,

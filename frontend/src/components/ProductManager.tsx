@@ -48,11 +48,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   // Product creation state
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newProductName, setNewProductName] = useState('');
+  const [newProductIvaPercentage, setNewProductIvaPercentage] = useState<number | null>(null);
   const [newProductMaterials, setNewProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   // Product editing state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editProductName, setEditProductName] = useState('');
+  const [editProductIvaPercentage, setEditProductIvaPercentage] = useState<number | null>(null);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   useEffect(() => {
@@ -116,12 +118,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setLoading(true);
       const productData: ProductCreate = {
         nombre: newProductName.trim(),
+        iva_percentage: newProductIvaPercentage ?? undefined,
         product_materials: newProductMaterials
       };
 
       await apiService.createProduct(productData);
       setShowCreateDialog(false);
       setNewProductName('');
+      setNewProductIvaPercentage(null);
       setNewProductMaterials([]);
       setError(null);
       setSuccess('Producto creado exitosamente');
@@ -137,6 +141,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const handleEditProduct = (product: Product) => {
     setEditingProduct(product);
     setEditProductName(product.nombre);
+    setEditProductIvaPercentage(product.iva_percentage);
     setEditProductMaterials(
       product.product_materials.map(pm => ({
         material_id: pm.material_id,
@@ -162,12 +167,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setLoading(true);
       const productData: ProductCreate = {
         nombre: editProductName.trim(),
+        iva_percentage: editProductIvaPercentage ?? undefined,
         product_materials: editProductMaterials
       };
 
       await apiService.updateProduct(editingProduct.id, productData);
       setEditingProduct(null);
       setEditProductName('');
+      setEditProductIvaPercentage(null);
       setEditProductMaterials([]);
       setError(null);
       setSuccess('Producto actualizado exitosamente');
@@ -307,13 +314,15 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
               <TableCell><strong>Producto</strong></TableCell>
               <TableCell><strong>Materiales</strong></TableCell>
               <TableCell align="right"><strong>Costo Total</strong></TableCell>
+              <TableCell align="right"><strong>IVA (%)</strong></TableCell>
+              <TableCell align="right"><strong>IVA Monto</strong></TableCell>
               <TableCell align="center"><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={6} align="center">
                   No hay productos registrados
                 </TableCell>
               </TableRow>
@@ -335,6 +344,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   </TableCell>
                   <TableCell align="right">
                     ${parseFloat(product.costo_total).toFixed(2)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {product.iva_percentage}%
+                  </TableCell>
+                  <TableCell align="right">
+                    ${parseFloat(product.iva_amount).toFixed(2)}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -369,6 +384,33 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             value={newProductName}
             onChange={(e) => setNewProductName(e.target.value)}
             sx={{ mb: 2, mt: 1 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Porcentaje de IVA"
+            type="number"
+            value={newProductIvaPercentage ?? ''}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              if (inputValue === '') {
+                setNewProductIvaPercentage(null);
+              } else {
+                const value = parseFloat(inputValue);
+                if (!isNaN(value) && value >= 0 && value <= 100) {
+                  setNewProductIvaPercentage(value);
+                }
+              }
+            }}
+            onBlur={(e) => {
+              const value = parseFloat(e.target.value);
+              if (isNaN(value) || value < 0 || value > 100) {
+                setNewProductIvaPercentage(21); // Default to 21% if invalid
+              }
+            }}
+            inputProps={{ min: 0, max: 100, step: 0.01 }}
+            sx={{ mb: 2 }}
+            helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
           />
 
           <Typography variant="h6" gutterBottom>
@@ -441,6 +483,33 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             value={editProductName}
             onChange={(e) => setEditProductName(e.target.value)}
             sx={{ mb: 2, mt: 1 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Porcentaje de IVA"
+            type="number"
+            value={editProductIvaPercentage ?? ''}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              if (inputValue === '') {
+                setEditProductIvaPercentage(null);
+              } else {
+                const value = parseFloat(inputValue);
+                if (!isNaN(value) && value >= 0 && value <= 100) {
+                  setEditProductIvaPercentage(value);
+                }
+              }
+            }}
+            onBlur={(e) => {
+              const value = parseFloat(e.target.value);
+              if (isNaN(value) || value < 0 || value > 100) {
+                setEditProductIvaPercentage(21); // Default to 21% if invalid
+              }
+            }}
+            inputProps={{ min: 0, max: 100, step: 0.01 }}
+            sx={{ mb: 2 }}
+            helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
           />
 
           <Typography variant="h6" gutterBottom>
