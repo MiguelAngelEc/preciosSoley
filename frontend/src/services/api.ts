@@ -8,7 +8,12 @@ import {
   CantidadQuery,
   LoginCredentials,
   RegisterData,
-  AuthResponse
+  AuthResponse,
+  Product,
+  ProductCreate,
+  ProductUpdate,
+  ProductMaterialCreate,
+  CostosTotalesResponse
 } from '../types';
 
 // API Configuration
@@ -94,6 +99,46 @@ class ApiService {
 
   async calculateCosts(id: number, query: CantidadQuery): Promise<CostosResponse> {
     const response: AxiosResponse<CostosResponse> = await this.api.post(`/api/materials/${id}/costos`, query);
+    return response.data;
+  }
+
+  // Product methods
+  async getProducts(skip: number = 0, limit: number = 100): Promise<Product[]> {
+    const response: AxiosResponse<Product[]> = await this.api.get('/api/products/', {
+      params: { skip, limit }
+    });
+    return response.data;
+  }
+
+  async getProduct(id: number): Promise<Product> {
+    const response: AxiosResponse<Product> = await this.api.get(`/api/products/${id}`);
+    return response.data;
+  }
+
+  async createProduct(product: ProductCreate): Promise<Product> {
+    const response: AxiosResponse<Product> = await this.api.post('/api/products/', product);
+    return response.data;
+  }
+
+  async updateProduct(id: number, product: ProductUpdate): Promise<Product> {
+    const response: AxiosResponse<Product> = await this.api.put(`/api/products/${id}`, product);
+    return response.data;
+  }
+
+  async deleteProduct(id: number): Promise<void> {
+    await this.api.delete(`/api/products/${id}`);
+  }
+
+  async addMaterialToProduct(productId: number, materialData: ProductMaterialCreate): Promise<void> {
+    await this.api.post(`/api/products/${productId}/materials`, materialData);
+  }
+
+  async removeMaterialFromProduct(productId: number, materialId: number): Promise<void> {
+    await this.api.delete(`/api/products/${productId}/materials/${materialId}`);
+  }
+
+  async calculateTotalCosts(): Promise<CostosTotalesResponse> {
+    const response: AxiosResponse<CostosTotalesResponse> = await this.api.get('/api/products/costs/total');
     return response.data;
   }
 }

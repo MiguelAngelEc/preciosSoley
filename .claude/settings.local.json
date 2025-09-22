@@ -10,7 +10,8 @@
       "Bash(curl:*)",
       "Bash(git init:*)",
       "Bash(alembic current:*)",
-      "Bash(alembic:*)"
+      "Bash(alembic:*)",
+      "Read(//c/api/**)"
     ],
     "deny": [],
     "ask": []

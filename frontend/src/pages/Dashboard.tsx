@@ -17,7 +17,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Alert
+  Alert,
+  Tabs,
+  Tab
 } from '@mui/material';
 import {
   AccountCircle,
@@ -30,11 +32,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
 import { Material, MaterialCreate } from '../types';
+import ProductManager from '../components/ProductManager';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [tabValue, setTabValue] = useState(0);
   const [materials, setMaterials] = useState<Material[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +72,10 @@ const Dashboard: React.FC = () => {
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
   };
 
   const handleClose = () => {
@@ -254,25 +262,34 @@ const Dashboard: React.FC = () => {
 
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Gestión de Productos
+          Precios Soley - Gestión
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-          Agregue productos y vea sus precios por kilogramo y gramo.
+          Gestione materiales y productos con sus respectivos costos.
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={tabValue} onChange={handleTabChange} aria-label="management tabs">
+            <Tab label="Materiales" />
+            <Tab label="Productos" />
+          </Tabs>
+        </Box>
 
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
+        {tabValue === 0 && (
+          <>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
 
-        <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
+            {success && (
+              <Alert severity="success" sx={{ mb: 2 }}>
+                {success}
+              </Alert>
+            )}
+
+            <Box component="form" onSubmit={handleSubmit} sx={{ mb: 4 }}>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, alignItems: 'center' }}>
             <Box sx={{ flex: '1 1 300px', minWidth: '200px' }}>
               <TextField
@@ -384,6 +401,12 @@ const Dashboard: React.FC = () => {
             </TableBody>
           </Table>
         </TableContainer>
+          </>
+        )}
+
+        {tabValue === 1 && (
+          <ProductManager materials={materials} />
+        )}
       </Container>
     </Box>
   );

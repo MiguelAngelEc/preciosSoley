@@ -18,3 +18,4 @@ class User(BaseEntity):
     role = Column(SQLEnum(Role), default=Role.USER)
 
     materials = relationship("Material", back_populates="user")
+    products = relationship("Product", back_populates="user")

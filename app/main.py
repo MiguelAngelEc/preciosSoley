@@ -2,7 +2,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app.api import auth, materials
+from app.api import auth, materials, products
+# Import all models to ensure they are registered with SQLAlchemy
+from app.models import User, Material, Product, ProductMaterial
+
+# Create all tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Precios Soley API",
@@ -12,7 +17,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,3 +25,4 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(materials.router)
+app.include_router(products.router, prefix="", tags=["products"])

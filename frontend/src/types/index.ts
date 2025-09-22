@@ -37,6 +37,54 @@ export interface CantidadQuery {
   cantidades: number[];
 }
 
+// Product Types
+export interface ProductMaterial {
+  id: number;
+  product_id: number;
+  material_id: number;
+  cantidad: string;
+  costo: string;
+  material: Material;
+}
+
+export interface Product {
+  id: number;
+  nombre: string;
+  costo_total: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  product_materials: ProductMaterial[];
+}
+
+export interface ProductCreate {
+  nombre: string;
+  product_materials: ProductMaterialCreate[];
+}
+
+export interface ProductMaterialCreate {
+  material_id: number;
+  cantidad: number;
+}
+
+export interface ProductUpdate {
+  nombre?: string;
+  product_materials?: ProductMaterialCreate[];
+}
+
+export interface ProductSummary {
+  id: number;
+  nombre: string;
+  costo_total: string;
+  materiales_count: number;
+}
+
+export interface CostosTotalesResponse {
+  productos: ProductSummary[];
+  costo_total_general: string;
+  total_productos: number;
+}
+
 // Auth Types
 export interface LoginCredentials {
   username: string;
