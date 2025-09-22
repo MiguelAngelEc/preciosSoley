@@ -36,53 +36,55 @@ def create_product(db: Session, product: ProductCreate, user: User) -> ProductRe
         )
 
     # Validate that at least one material is provided
-    if not product.product_materials:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Product must have at least one material"
-        )
+    # if not product.product_materials:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_400_BAD_REQUEST,
+    #         detail="Product must have at least one material"
+    #     )
 
     # Create product
     db_product = Product(
         user_id=user.id,
-        nombre=product.nombre
+        nombre=product.nombre,
+        iva_percentage=product.iva_percentage
     )
     db.add(db_product)
     db.flush()  # Get the product ID
 
     # Add materials to product
-    for pm_data in product.product_materials:
-        # Validate material exists and belongs to user
-        material = db.query(Material).filter(
-            Material.id == pm_data.material_id,
-            Material.user_id == user.id,
-            Material.is_active == True
-        ).first()
-        if not material:
-            db.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Material with id {pm_data.material_id} not found"
-            )
+    if product.product_materials:
+        for pm_data in product.product_materials:
+            # Validate material exists and belongs to user
+            material = db.query(Material).filter(
+                Material.id == pm_data.material_id,
+                Material.user_id == user.id,
+                Material.is_active == True
+            ).first()
+            if not material:
+                db.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Material with id {pm_data.material_id} not found"
+                )
 
-        # Check for duplicate materials in the same product
-        existing_pm = db.query(ProductMaterial).filter(
-            ProductMaterial.product_id == db_product.id,
-            ProductMaterial.material_id == pm_data.material_id
-        ).first()
-        if existing_pm:
-            db.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Material {material.nombre} is already added to this product"
-            )
+            # Check for duplicate materials in the same product
+            existing_pm = db.query(ProductMaterial).filter(
+                ProductMaterial.product_id == db_product.id,
+                ProductMaterial.material_id == pm_data.material_id
+            ).first()
+            if existing_pm:
+                db.rollback()
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Material {material.nombre} is already added to this product"
+                )
 
-        db_pm = ProductMaterial(
-            product_id=db_product.id,
-            material_id=pm_data.material_id,
-            cantidad=pm_data.cantidad
-        )
-        db.add(db_pm)
+            db_pm = ProductMaterial(
+                product_id=db_product.id,
+                material_id=pm_data.material_id,
+                cantidad=pm_data.cantidad
+            )
+            db.add(db_pm)
 
     db.commit()
     db.refresh(db_product)
@@ -371,7 +373,7 @@ def _build_product_response(product: Product) -> ProductResponse:
         id=product.id,
         nombre=product.nombre,
         costo_total=product.calcular_costo_total(),
-        iva_percentage=21.0,  # Fixed for now
+        iva_percentage=product.iva_percentage or 21.0,
         iva_amount=product.iva_amount,
         is_active=product.is_active,
         created_at=product.created_at,

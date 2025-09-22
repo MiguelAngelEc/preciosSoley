@@ -13,7 +13,7 @@ class Product(BaseEntity):
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     nombre = Column(String, nullable=False)
-    # iva_percentage = Column(Numeric(5, 2), nullable=True, default=21.0)  # IVA percentage for calculation
+    iva_percentage = Column(Numeric(5, 2), nullable=True, default=21.0)  # IVA percentage for calculation
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
@@ -31,9 +31,10 @@ class Product(BaseEntity):
 
     @hybrid_property
     def iva_amount(self) -> Decimal:
-        """Calculate IVA amount based on total cost with default 21%"""
+        """Calculate IVA amount based on total cost and IVA percentage"""
         costo_total = self.calcular_costo_total()
-        return costo_total * Decimal(21.0 / 100)  # Default 21%
+        iva_pct = self.iva_percentage or 21.0  # Default to 21% if None
+        return costo_total * Decimal(iva_pct / 100)
 
 
 class ProductMaterial(BaseEntity):

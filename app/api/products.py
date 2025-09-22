@@ -18,7 +18,7 @@ from ..services.product_service import (
 router = APIRouter(prefix="/api/products", tags=["products"])
 
 
-@router.post("/")
+@router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
 def create_new_product(
     product: ProductCreate,
     db: Session = Depends(get_db)
