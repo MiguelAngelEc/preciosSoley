@@ -57,9 +57,20 @@ def update_material(db: Session, material_id: int, material_update: MaterialUpda
     return material
 
 def delete_material(db: Session, material_id: int, user: User) -> bool:
-    material = db.query(Material).filter(Material.id == material_id, Material.user_id == user.id).first()
+    from sqlalchemy.orm import joinedload
+
+    material = db.query(Material).options(
+        joinedload(Material.product_materials).joinedload("product")
+    ).filter(Material.id == material_id, Material.user_id == user.id).first()
+
     if not material:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Material not found")
+
+    # Check if material is used in any active products
+    active_usage = any(pm.product and pm.product.is_active for pm in material.product_materials)
+    if active_usage:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot delete material that is used in active products")
+
     db.delete(material)
     db.commit()
     return True

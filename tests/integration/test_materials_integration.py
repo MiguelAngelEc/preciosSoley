@@ -210,4 +210,59 @@ def test_calculate_costs(client, session):
     costs = response.json()
     assert costs["material"]["id"] == material_id
     assert costs["costos"]["1000"] == "10.000000"
+def test_delete_material_used_in_product(client, session):
+    # Register, login, create material and product, test deletion rules
+    user_data = {
+        "username": "productmatuser",
+        "email": "productmat@example.com",
+        "password": "productmatpass"
+    }
+    client.post("/auth/register", json=user_data)
+
+    login_data = {
+        "username": "productmatuser",
+        "password": "productmatpass"
+    }
+    login_response = client.post("/auth/login", json=login_data)
+    token = login_response.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Create material
+    material_data = {
+        "nombre": "Product Material",
+        "precio_base": "15.00",
+        "unidad_base": "kg"
+    }
+    material_response = client.post("/api/materials/", json=material_data, headers=headers)
+    material_id = material_response.json()["id"]
+
+    # Create product using the material
+    product_data = {
+        "nombre": "Test Product",
+        "iva_percentage": 21.0,
+        "product_materials": [
+            {
+                "material_id": material_id,
+                "cantidad": "500"
+            }
+        ]
+    }
+    product_response = client.post("/api/products/", json=product_data, headers=headers)
+    product_id = product_response.json()["id"]
+
+    # Try to delete material while it's used in active product - should fail
+    delete_response = client.delete(f"/api/materials/{material_id}", headers=headers)
+    assert delete_response.status_code == 400
+    assert "used in active products" in delete_response.json()["detail"]
+
+    # Delete the product (soft delete)
+    client.delete(f"/api/products/{product_id}", headers=headers)
+
+    # Now try to delete the material - should succeed
+    delete_response = client.delete(f"/api/materials/{material_id}", headers=headers)
+    assert delete_response.status_code == 200
+
+    # Verify material is deleted
+    get_response = client.get(f"/api/materials/{material_id}", headers=headers)
+    assert get_response.status_code == 404
     assert costs["costos"]["500"] == "5.000000"
