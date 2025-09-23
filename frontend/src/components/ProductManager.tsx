@@ -20,7 +20,6 @@ import {
   Select,
   MenuItem,
   FormControl,
-  InputLabel,
   Chip,
   Card,
   CardContent
@@ -97,7 +96,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
 
     // Validate that all materials have valid quantities and materials selected
     for (const pm of newProductMaterials) {
-      if (!pm.cantidad || pm.cantidad <= 0) {
+      const cantidad = parseFloat(pm.cantidad);
+      if (isNaN(cantidad) || cantidad <= 0) {
         setError('Todas las cantidades deben ser positivas');
         return;
       }
@@ -145,7 +145,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     setEditProductMaterials(
       product.product_materials.map(pm => ({
         material_id: pm.material_id,
-        cantidad: parseFloat(pm.cantidad)
+        cantidad: pm.cantidad
       }))
     );
   };
@@ -161,6 +161,19 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     if (editProductMaterials.length === 0) {
       setError('Debe tener al menos un material');
       return;
+    }
+
+    // Validate that all materials have valid quantities and materials selected
+    for (const pm of editProductMaterials) {
+      const cantidad = parseFloat(pm.cantidad);
+      if (isNaN(cantidad) || cantidad <= 0) {
+        setError('Todas las cantidades deben ser positivas');
+        return;
+      }
+      if (!pm.material_id || pm.material_id === 0) {
+        setError('Debe seleccionar un material para cada entrada');
+        return;
+      }
     }
 
     try {
@@ -207,7 +220,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   };
 
   const addMaterialToNewProduct = () => {
-    setNewProductMaterials([...newProductMaterials, { material_id: 0, cantidad: 0 }]);
+    setNewProductMaterials([...newProductMaterials, { material_id: 0, cantidad: '0' }]);
   };
 
   const updateNewProductMaterial = (index: number, field: string, value: any) => {
@@ -221,7 +234,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   };
 
   const addMaterialToEditProduct = () => {
-    setEditProductMaterials([...editProductMaterials, { material_id: 0, cantidad: 0 }]);
+    setEditProductMaterials([...editProductMaterials, { material_id: 0, cantidad: '0' }]);
   };
 
   const updateEditProductMaterial = (index: number, field: string, value: any) => {
@@ -239,12 +252,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     return material ? material.nombre : 'Material no encontrado';
   };
 
-  const calculateMaterialCost = (materialId: number | string, cantidad: number) => {
-    if (!materialId || materialId === '' || !cantidad || cantidad <= 0) return 0;
+  const calculateMaterialCost = (materialId: number | string, cantidad: string) => {
+    if (!materialId || materialId === '' || !cantidad || cantidad === '') return 0;
     const material = materials.find(m => m.id === Number(materialId));
     if (!material) return 0;
     const precio = parseFloat(material.precio_unidad_pequena);
-    return isNaN(precio) ? 0 : precio * cantidad;
+    const cant = parseFloat(cantidad);
+    return isNaN(precio) || isNaN(cant) ? 0 : precio * cant;
   };
 
   return (
@@ -335,7 +349,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                       {product.product_materials.map((pm, index) => (
                         <Chip
                           key={index}
-                          label={`${getMaterialName(pm.material_id)} (${pm.cantidad}g)`}
+                          label={`${getMaterialName(pm.material_id)} (${parseFloat(pm.cantidad).toFixed(2)}g)`}
                           size="small"
                           variant="outlined"
                         />
@@ -420,14 +434,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
           {newProductMaterials.map((pm, index) => (
             <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <FormControl sx={{ minWidth: 200, mr: 2 }}>
-                <InputLabel>Material</InputLabel>
                 <Select
                   value={pm.material_id || ''}
                   onChange={(e) => updateNewProductMaterial(index, 'material_id', Number(e.target.value))}
                   displayEmpty
                 >
                   <MenuItem value="">
-                    <em>Seleccionar material</em>
+                    <em>Seleccionar Material</em>
                   </MenuItem>
                   {materials.map((material) => (
                     <MenuItem key={material.id} value={material.id}>
@@ -440,19 +453,15 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
               <TextField
                 label="Cantidad (g/ml)"
                 type="number"
-                value={pm.cantidad}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  if (!isNaN(value) && value >= 0) {
-                    updateNewProductMaterial(index, 'cantidad', value);
-                  }
-                }}
+                value={pm.cantidad === '0' ? '' : pm.cantidad}
+                placeholder="0"
+                onChange={(e) => updateNewProductMaterial(index, 'cantidad', e.target.value || '0')}
                 inputProps={{ min: 0, step: 0.01 }}
                 sx={{ mr: 2, width: 150 }}
               />
 
               <Typography sx={{ mr: 2 }}>
-                Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(4) : '0.0000'}
+                Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(2) : '0.00'}
               </Typography>
 
               <IconButton onClick={() => removeNewProductMaterial(index)} color="error">
@@ -519,14 +528,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
           {editProductMaterials.map((pm, index) => (
             <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <FormControl sx={{ minWidth: 200, mr: 2 }}>
-                <InputLabel>Material</InputLabel>
                 <Select
                   value={pm.material_id || ''}
                   onChange={(e) => updateEditProductMaterial(index, 'material_id', Number(e.target.value))}
                   displayEmpty
                 >
                   <MenuItem value="">
-                    <em>Seleccionar material</em>
+                    <em>Seleccionar Material</em>
                   </MenuItem>
                   {materials.map((material) => (
                     <MenuItem key={material.id} value={material.id}>
@@ -539,19 +547,15 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
               <TextField
                 label="Cantidad (g/ml)"
                 type="number"
-                value={pm.cantidad}
-                onChange={(e) => {
-                  const value = parseFloat(e.target.value);
-                  if (!isNaN(value) && value >= 0) {
-                    updateEditProductMaterial(index, 'cantidad', value);
-                  }
-                }}
+                value={pm.cantidad === '0' ? '' : pm.cantidad}
+                placeholder="0"
+                onChange={(e) => updateEditProductMaterial(index, 'cantidad', e.target.value || '0')}
                 inputProps={{ min: 0, step: 0.01 }}
                 sx={{ mr: 2, width: 150 }}
               />
 
               <Typography sx={{ mr: 2 }}>
-                Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(4) : '0.0000'}
+                Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(2) : '0.00'}
               </Typography>
 
               <IconButton onClick={() => removeEditProductMaterial(index)} color="error">
