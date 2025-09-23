@@ -21,7 +21,7 @@ class Material(BaseEntity):
     is_active = Column(Boolean, default=True)
 
     user = relationship("User", back_populates="materials")
-    product_materials = relationship("ProductMaterial", back_populates="material")
+    product_materials = relationship("ProductMaterial", back_populates="material", cascade="all, delete-orphan")
 
     def calcular_precio_cantidad(self, cantidad: Decimal) -> Decimal:
         # Calculate cost for given quantity in grams/ml
