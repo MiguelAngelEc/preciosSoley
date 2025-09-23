@@ -67,7 +67,7 @@ export interface ProductCreate {
 
 export interface ProductMaterialCreate {
   material_id: number;
-  cantidad: number;
+  cantidad: string;
 }
 
 export interface ProductUpdate {

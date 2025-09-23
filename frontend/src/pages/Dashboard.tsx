@@ -370,7 +370,7 @@ const Dashboard: React.FC = () => {
                             fullWidth
                           />
                         </TableCell>
-                        <TableCell align="right">${parseFloat(editFormData.precio_base || '0').toFixed(4)}</TableCell>
+                        <TableCell align="right">${parseFloat(editFormData.precio_base || '0').toFixed(2)}</TableCell>
                         <TableCell align="center">
                           <IconButton onClick={handleSaveEdit} color="primary" size="small">
                             <Check />
@@ -384,7 +384,7 @@ const Dashboard: React.FC = () => {
                       <>
                         <TableCell>{material.nombre}</TableCell>
                         <TableCell align="right">${parseFloat(material.precio_base).toFixed(2)}</TableCell>
-                        <TableCell align="right">${parseFloat(material.precio_unidad_pequena).toFixed(4)}</TableCell>
+                        <TableCell align="right">${parseFloat(material.precio_unidad_pequena).toFixed(2)}</TableCell>
                         <TableCell align="center">
                           <IconButton onClick={() => handleEdit(material)} color="primary" size="small">
                             <Edit />
