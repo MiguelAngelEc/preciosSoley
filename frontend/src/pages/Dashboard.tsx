@@ -325,7 +325,7 @@ const Dashboard: React.FC = () => {
               <TableRow>
                 <TableCell><strong>Material</strong></TableCell>
                 <TableCell align="right"><strong>Precio por Kilogramo</strong></TableCell>
-                <TableCell align="right"><strong>Precio por Gramo</strong></TableCell>
+                <TableCell align="right"><strong>Precio por Unidad Pequeña</strong></TableCell>
                 <TableCell align="center"><strong>Acciones</strong></TableCell>
               </TableRow>
             </TableHead>
@@ -361,7 +361,7 @@ const Dashboard: React.FC = () => {
                             fullWidth
                           />
                         </TableCell>
-                        <TableCell align="right">${parseFloat(editFormData.precio_base || '0').toFixed(2)}</TableCell>
+                        <TableCell align="right">${parseFloat(editFormData.precio_base || '0').toFixed(6)}</TableCell>
                         <TableCell align="center">
                           <IconButton onClick={handleSaveEdit} color="primary" size="small">
                             <Check />
@@ -375,7 +375,7 @@ const Dashboard: React.FC = () => {
                       <>
                         <TableCell>{material.nombre}</TableCell>
                         <TableCell align="right">${parseFloat(material.precio_base).toFixed(2)}</TableCell>
-                        <TableCell align="right">${parseFloat(material.precio_unidad_pequena).toFixed(2)}</TableCell>
+                        <TableCell align="right">${parseFloat(material.precio_unidad_pequena).toFixed(6)}</TableCell>
                         <TableCell align="center">
                           <IconButton onClick={() => handleEdit(material)} color="primary" size="small">
                             <Edit />
