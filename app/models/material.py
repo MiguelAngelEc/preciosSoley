@@ -1,7 +1,8 @@
 from enum import Enum
 from decimal import Decimal
+from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Numeric, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Numeric, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
 from .base import BaseEntity
@@ -19,6 +20,8 @@ class Material(BaseEntity):
     unidad_base = Column(String, default=UnidadBase.KG.value)
     precio_unidad_pequena = Column(Numeric(12, 6), nullable=False)  # e.g., 0.00345 for per gram/ml
     is_active = Column(Boolean, default=True)
+    deleted_at = Column(DateTime, nullable=True)
+    version = Column(Integer, default=1)
 
     user = relationship("User", back_populates="materials")
     product_materials = relationship("ProductMaterial", back_populates="material", cascade="all, delete-orphan")
