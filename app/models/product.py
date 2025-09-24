@@ -14,6 +14,9 @@ class Product(BaseEntity):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     nombre = Column(String, nullable=False)
     iva_percentage = Column(Numeric(5, 2), nullable=True, default=21.0)  # IVA percentage for calculation
+    margen_publico = Column(Numeric(5, 2), nullable=False)  # Profit margin for retail sales
+    margen_mayorista = Column(Numeric(5, 2), nullable=False)  # Profit margin for wholesale sales
+    margen_distribuidor = Column(Numeric(5, 2), nullable=False)  # Profit margin for distributor sales
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
@@ -35,6 +38,39 @@ class Product(BaseEntity):
         costo_total = self.calcular_costo_total()
         iva_pct = self.iva_percentage or 21.0  # Default to 21% if None
         return costo_total * Decimal(iva_pct / 100)
+
+    @hybrid_property
+    def precio_publico(self) -> Decimal:
+        """Calculate retail selling price based on profit margin"""
+        costo_total = self.calcular_costo_total()
+        if costo_total == 0:
+            return Decimal('0')
+        margen = self.margen_publico
+        if margen >= 100 or margen < 0:
+            return Decimal('0')
+        return costo_total / (1 - margen / 100)
+
+    @hybrid_property
+    def precio_mayorista(self) -> Decimal:
+        """Calculate wholesale selling price based on profit margin"""
+        costo_total = self.calcular_costo_total()
+        if costo_total == 0:
+            return Decimal('0')
+        margen = self.margen_mayorista
+        if margen >= 100 or margen < 0:
+            return Decimal('0')
+        return costo_total / (1 - margen / 100)
+
+    @hybrid_property
+    def precio_distribuidor(self) -> Decimal:
+        """Calculate distributor selling price based on profit margin"""
+        costo_total = self.calcular_costo_total()
+        if costo_total == 0:
+            return Decimal('0')
+        margen = self.margen_distribuidor
+        if margen >= 100 or margen < 0:
+            return Decimal('0')
+        return costo_total / (1 - margen / 100)
 
 
 class ProductMaterial(BaseEntity):
