@@ -86,13 +86,18 @@ class ProductResponse(BaseModel):
     nombre: str
     costo_total: Decimal
     iva_percentage: float
-    iva_amount: Decimal
+    iva_publico: Decimal
+    iva_mayorista: Decimal
+    iva_distribuidor: Decimal
     margen_publico: float
     margen_mayorista: float
     margen_distribuidor: float
     precio_publico: Decimal
     precio_mayorista: Decimal
     precio_distribuidor: Decimal
+    precio_publico_con_iva: Decimal
+    precio_mayorista_con_iva: Decimal
+    precio_distribuidor_con_iva: Decimal
     is_active: bool
     created_at: datetime
     updated_at: datetime
