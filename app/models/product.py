@@ -33,11 +33,40 @@ class Product(BaseEntity):
         return total
 
     @hybrid_property
-    def iva_amount(self) -> Decimal:
-        """Calculate IVA amount based on total cost and IVA percentage"""
-        costo_total = self.calcular_costo_total()
+    def iva_publico(self) -> Decimal:
+        """Calculate IVA amount for retail price"""
+        precio = self.precio_publico
         iva_pct = self.iva_percentage or 21.0  # Default to 21% if None
-        return costo_total * Decimal(iva_pct / 100)
+        return precio * Decimal(iva_pct / 100)
+
+    @hybrid_property
+    def iva_mayorista(self) -> Decimal:
+        """Calculate IVA amount for wholesale price"""
+        precio = self.precio_mayorista
+        iva_pct = self.iva_percentage or 21.0  # Default to 21% if None
+        return precio * Decimal(iva_pct / 100)
+
+    @hybrid_property
+    def iva_distribuidor(self) -> Decimal:
+        """Calculate IVA amount for distributor price"""
+        precio = self.precio_distribuidor
+        iva_pct = self.iva_percentage or 21.0  # Default to 21% if None
+        return precio * Decimal(iva_pct / 100)
+
+    @hybrid_property
+    def precio_publico_con_iva(self) -> Decimal:
+        """Calculate retail price including IVA"""
+        return self.precio_publico + self.iva_publico
+
+    @hybrid_property
+    def precio_mayorista_con_iva(self) -> Decimal:
+        """Calculate wholesale price including IVA"""
+        return self.precio_mayorista + self.iva_mayorista
+
+    @hybrid_property
+    def precio_distribuidor_con_iva(self) -> Decimal:
+        """Calculate distributor price including IVA"""
+        return self.precio_distribuidor + self.iva_distribuidor
 
     @hybrid_property
     def precio_publico(self) -> Decimal:

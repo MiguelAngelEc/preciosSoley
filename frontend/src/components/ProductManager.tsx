@@ -777,7 +777,16 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                         IVA
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {detailProduct.iva_percentage}% (${parseFloat(detailProduct.iva_amount).toFixed(2)})
+                        {detailProduct.iva_percentage}%
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Público: ${parseFloat(detailProduct.iva_publico).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Mayorista: ${parseFloat(detailProduct.iva_mayorista).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Distribuidor: ${parseFloat(detailProduct.iva_distribuidor).toFixed(2)}
                       </Typography>
                     </Box>
                   </Box>
@@ -845,6 +854,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                         ${parseFloat(detailProduct.precio_publico).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
+                        + IVA: ${parseFloat(detailProduct.iva_publico).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        Total: ${parseFloat(detailProduct.precio_publico_con_iva).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2">
                         Margen: {detailProduct.margen_publico}%
                       </Typography>
                     </Box>
@@ -856,6 +871,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                         ${parseFloat(detailProduct.precio_mayorista).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
+                        + IVA: ${parseFloat(detailProduct.iva_mayorista).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        Total: ${parseFloat(detailProduct.precio_mayorista_con_iva).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2">
                         Margen: {detailProduct.margen_mayorista}%
                       </Typography>
                     </Box>
@@ -865,6 +886,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                       </Typography>
                       <Typography variant="h6">
                         ${parseFloat(detailProduct.precio_distribuidor).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2">
+                        + IVA: ${parseFloat(detailProduct.iva_distribuidor).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2" fontWeight="bold">
+                        Total: ${parseFloat(detailProduct.precio_distribuidor_con_iva).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
                         Margen: {detailProduct.margen_distribuidor}%
