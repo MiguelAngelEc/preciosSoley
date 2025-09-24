@@ -20,7 +20,6 @@ import {
   Select,
   MenuItem,
   FormControl,
-  Chip,
   Card,
   CardContent
 } from '@mui/material';
@@ -64,6 +63,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [editProductMargenMayorista, setEditProductMargenMayorista] = useState<number>(0);
   const [editProductMargenDistribuidor, setEditProductMargenDistribuidor] = useState<number>(0);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
+
+  // Product detail modal state
+  const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -283,10 +285,6 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     setEditProductMaterials(editProductMaterials.filter((_, i) => i !== index));
   };
 
-  const getMaterialName = (materialId: number) => {
-    const material = materials.find(m => m.id === materialId);
-    return material ? material.nombre : 'Material no encontrado';
-  };
 
   const calculateMaterialCost = (materialId: number | string, cantidad: string) => {
     if (!materialId || materialId === '' || !cantidad || cantidad === '') return 0;
@@ -363,16 +361,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
           <TableHead>
             <TableRow>
               <TableCell><strong>Producto</strong></TableCell>
-              <TableCell><strong>Materiales</strong></TableCell>
               <TableCell align="right"><strong>Costo Total</strong></TableCell>
-              <TableCell align="right"><strong>IVA (%)</strong></TableCell>
-              <TableCell align="right"><strong>IVA Monto</strong></TableCell>
-              <TableCell align="right"><strong>Margen Público (%)</strong></TableCell>
-              <TableCell align="right"><strong>Precio Público</strong></TableCell>
-              <TableCell align="right"><strong>Margen Mayorista (%)</strong></TableCell>
-              <TableCell align="right"><strong>Precio Mayorista</strong></TableCell>
-              <TableCell align="right"><strong>Margen Distribuidor (%)</strong></TableCell>
-              <TableCell align="right"><strong>Precio Distribuidor</strong></TableCell>
+              <TableCell align="right"><strong>PVP</strong></TableCell>
+              <TableCell align="right"><strong>PVM</strong></TableCell>
+              <TableCell align="right"><strong>PVD</strong></TableCell>
               <TableCell align="center"><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
@@ -380,53 +372,34 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             {filteredProducts.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={12} align="center">
-                  {searchTerm ? 'No se encontraron productos que coincidan con la búsqueda' : 'No hay productos registrados'}
+                  No hay productos registrados
                 </TableCell>
               </TableRow>
             ) : (
               filteredProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.nombre}</TableCell>
-                  <TableCell>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {product.product_materials.map((pm, index) => (
-                        <Chip
-                          key={index}
-                          label={`${getMaterialName(pm.material_id)} (${parseFloat(pm.cantidad).toFixed(2)}g)`}
-                          size="small"
-                          variant="outlined"
-                        />
-                      ))}
-                    </Box>
-                  </TableCell>
                   <TableCell align="right">
                     ${parseFloat(product.costo_total).toFixed(2)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {product.iva_percentage}%
-                  </TableCell>
-                  <TableCell align="right">
-                    ${parseFloat(product.iva_amount).toFixed(2)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {product.margen_publico}%
                   </TableCell>
                   <TableCell align="right">
                     ${parseFloat(product.precio_publico).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    {product.margen_mayorista}%
-                  </TableCell>
-                  <TableCell align="right">
                     ${parseFloat(product.precio_mayorista).toFixed(2)}
-                  </TableCell>
-                  <TableCell align="right">
-                    {product.margen_distribuidor}%
                   </TableCell>
                   <TableCell align="right">
                     ${parseFloat(product.precio_distribuidor).toFixed(2)}
                   </TableCell>
                   <TableCell align="center">
+                    <IconButton
+                      onClick={() => setDetailProduct(product)}
+                      color="info"
+                      size="small"
+                      title="Ver detalles"
+                    >
+                      <Search />
+                    </IconButton>
                     <IconButton
                       onClick={() => handleEditProduct(product)}
                       color="primary"
@@ -497,11 +470,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Margen Público (%)"
                type="number"
-               value={newProductMargenPublico}
+               value={newProductMargenPublico === 0 ? '' : newProductMargenPublico}
+               placeholder="0"
                onChange={(e) => {
-                 const value = parseFloat(e.target.value);
-                 if (!isNaN(value) && value >= 0 && value < 100) {
-                   setNewProductMargenPublico(value);
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setNewProductMargenPublico(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0 && value < 100) {
+                     setNewProductMargenPublico(value);
+                   }
                  }
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
@@ -511,11 +490,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Margen Mayorista (%)"
                type="number"
-               value={newProductMargenMayorista}
+               value={newProductMargenMayorista === 0 ? '' : newProductMargenMayorista}
+               placeholder="0"
                onChange={(e) => {
-                 const value = parseFloat(e.target.value);
-                 if (!isNaN(value) && value >= 0 && value < 100) {
-                   setNewProductMargenMayorista(value);
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setNewProductMargenMayorista(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0 && value < 100) {
+                     setNewProductMargenMayorista(value);
+                   }
                  }
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
@@ -525,11 +510,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Margen Distribuidor (%)"
                type="number"
-               value={newProductMargenDistribuidor}
+               value={newProductMargenDistribuidor === 0 ? '' : newProductMargenDistribuidor}
+               placeholder="0"
                onChange={(e) => {
-                 const value = parseFloat(e.target.value);
-                 if (!isNaN(value) && value >= 0 && value < 100) {
-                   setNewProductMargenDistribuidor(value);
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setNewProductMargenDistribuidor(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0 && value < 100) {
+                     setNewProductMargenDistribuidor(value);
+                   }
                  }
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
@@ -640,11 +631,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Margen Público (%)"
                type="number"
-               value={editProductMargenPublico}
+               value={editProductMargenPublico === 0 ? '' : editProductMargenPublico}
+               placeholder="0"
                onChange={(e) => {
-                 const value = parseFloat(e.target.value);
-                 if (!isNaN(value) && value >= 0 && value < 100) {
-                   setEditProductMargenPublico(value);
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductMargenPublico(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0 && value < 100) {
+                     setEditProductMargenPublico(value);
+                   }
                  }
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
@@ -654,11 +651,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Margen Mayorista (%)"
                type="number"
-               value={editProductMargenMayorista}
+               value={editProductMargenMayorista === 0 ? '' : editProductMargenMayorista}
+               placeholder="0"
                onChange={(e) => {
-                 const value = parseFloat(e.target.value);
-                 if (!isNaN(value) && value >= 0 && value < 100) {
-                   setEditProductMargenMayorista(value);
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductMargenMayorista(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0 && value < 100) {
+                     setEditProductMargenMayorista(value);
+                   }
                  }
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
@@ -668,11 +671,17 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Margen Distribuidor (%)"
                type="number"
-               value={editProductMargenDistribuidor}
+               value={editProductMargenDistribuidor === 0 ? '' : editProductMargenDistribuidor}
+               placeholder="0"
                onChange={(e) => {
-                 const value = parseFloat(e.target.value);
-                 if (!isNaN(value) && value >= 0 && value < 100) {
-                   setEditProductMargenDistribuidor(value);
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductMargenDistribuidor(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0 && value < 100) {
+                     setEditProductMargenDistribuidor(value);
+                   }
                  }
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
@@ -732,6 +741,143 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
           <Button onClick={handleSaveEdit} variant="contained" disabled={loading}>
             Guardar Cambios
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Product Detail Modal */}
+      <Dialog
+        open={!!detailProduct}
+        onClose={() => setDetailProduct(null)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Detalles del Producto: {detailProduct?.nombre}
+        </DialogTitle>
+        <DialogContent>
+          {detailProduct && (
+            <Box sx={{ pt: 1 }}>
+              {/* Basic Information */}
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Información General
+                  </Typography>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Nombre del Producto
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {detailProduct.nombre}
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        IVA
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {detailProduct.iva_percentage}% (${parseFloat(detailProduct.iva_amount).toFixed(2)})
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+
+              {/* Materials Breakdown */}
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Desglose de Materiales
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {detailProduct.product_materials.map((pm, index) => (
+                      <Box
+                        key={index}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          p: 1,
+                          bgcolor: 'grey.50',
+                          borderRadius: 1
+                        }}
+                      >
+                        <Box>
+                          <Typography variant="body2" fontWeight="medium">
+                            {pm.material.nombre}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Cantidad: {parseFloat(pm.cantidad).toFixed(2)} {pm.material.unidad_base === 'kg' ? 'kg' : 'litros'}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: 'right' }}>
+                          <Typography variant="body2" color="text.secondary">
+                            Costo unitario: ${parseFloat(pm.material.precio_unidad_pequena).toFixed(2)}
+                          </Typography>
+                          <Typography variant="body1" fontWeight="medium">
+                            Subtotal: ${parseFloat(pm.costo).toFixed(2)}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    ))}
+                  </Box>
+                  <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Typography variant="h6" align="right">
+                      Costo Total: ${parseFloat(detailProduct.costo_total).toFixed(2)}
+                    </Typography>
+                  </Box>
+                </CardContent>
+              </Card>
+
+              {/* Pricing Information */}
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Información de Precios
+                  </Typography>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
+                    <Box sx={{ p: 2, bgcolor: 'success.light', borderRadius: 1, color: 'white' }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        PVP (Público)
+                      </Typography>
+                      <Typography variant="h6">
+                        ${parseFloat(detailProduct.precio_publico).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2">
+                        Margen: {detailProduct.margen_publico}%
+                      </Typography>
+                    </Box>
+                    <Box sx={{ p: 2, bgcolor: 'warning.light', borderRadius: 1, color: 'white' }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        PVM (Mayorista)
+                      </Typography>
+                      <Typography variant="h6">
+                        ${parseFloat(detailProduct.precio_mayorista).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2">
+                        Margen: {detailProduct.margen_mayorista}%
+                      </Typography>
+                    </Box>
+                    <Box sx={{ p: 2, bgcolor: 'info.light', borderRadius: 1, color: 'white' }}>
+                      <Typography variant="body2" fontWeight="medium">
+                        PVD (Distribuidor)
+                      </Typography>
+                      <Typography variant="h6">
+                        ${parseFloat(detailProduct.precio_distribuidor).toFixed(2)}
+                      </Typography>
+                      <Typography variant="body2">
+                        Margen: {detailProduct.margen_distribuidor}%
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailProduct(null)}>Cerrar</Button>
         </DialogActions>
       </Dialog>
     </Box>
