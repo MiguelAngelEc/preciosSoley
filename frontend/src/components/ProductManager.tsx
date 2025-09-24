@@ -411,13 +411,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                     ${parseFloat(product.costo_total).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.precio_publico).toFixed(2)}
+                    ${parseFloat(product.precio_publico_con_iva).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.precio_mayorista).toFixed(2)}
+                    ${parseFloat(product.precio_mayorista_con_iva).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.precio_distribuidor).toFixed(2)}
+                    ${parseFloat(product.precio_distribuidor_con_iva).toFixed(2)}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -578,7 +578,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                    }
                  }
                }}
-               inputProps={{ step: 0.01 }}
+               inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de la etiqueta (opcional)"
              />
              <TextField
@@ -598,7 +598,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                    }
                  }
                }}
-               inputProps={{ step: 0.01 }}
+               inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo del envase (opcional)"
              />
              <TextField
@@ -618,7 +618,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                    }
                  }
                }}
-               inputProps={{ step: 0.01 }}
+               inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de la caja (opcional)"
              />
              <TextField
@@ -638,95 +638,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                    }
                  }
                }}
-               inputProps={{ step: 0.01 }}
-               helperText="Costo de transporte (requerido)"
-               required
-             />
-           </Box>
-
-           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-             Costos Adicionales
-           </Typography>
-
-           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-             <TextField
-               fullWidth
-               label="Costo Etiqueta"
-               type="number"
-               value={editProductCostoEtiqueta === 0 ? '' : editProductCostoEtiqueta}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoEtiqueta(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoEtiqueta(value);
-                   }
-                 }
-               }}
-               inputProps={{ step: 0.01 }}
-               helperText="Costo de la etiqueta (opcional)"
-             />
-             <TextField
-               fullWidth
-               label="Costo Envase"
-               type="number"
-               value={editProductCostoEnvase === 0 ? '' : editProductCostoEnvase}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoEnvase(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoEnvase(value);
-                   }
-                 }
-               }}
-               inputProps={{ step: 0.01 }}
-               helperText="Costo del envase (opcional)"
-             />
-             <TextField
-               fullWidth
-               label="Costo Caja"
-               type="number"
-               value={editProductCostoCaja === 0 ? '' : editProductCostoCaja}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoCaja(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoCaja(value);
-                   }
-                 }
-               }}
-               inputProps={{ step: 0.01 }}
-               helperText="Costo de la caja (opcional)"
-             />
-             <TextField
-               fullWidth
-               label="Costo Transporte"
-               type="number"
-               value={editProductCostoTransporte === 0 ? '' : editProductCostoTransporte}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoTransporte(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoTransporte(value);
-                   }
-                 }
-               }}
-               inputProps={{ step: 0.01 }}
+               inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de transporte (requerido)"
                required
              />
@@ -890,6 +802,94 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                }}
                inputProps={{ min: 0, max: 99.99, step: 0.01 }}
                helperText="Margen para ventas a distribuidores"
+             />
+           </Box>
+
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Costos Adicionales
+           </Typography>
+
+           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+             <TextField
+               fullWidth
+               label="Costo Etiqueta"
+               type="number"
+               value={editProductCostoEtiqueta === 0 ? '' : editProductCostoEtiqueta}
+               placeholder="0"
+               onChange={(e) => {
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductCostoEtiqueta(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0) {
+                     setEditProductCostoEtiqueta(value);
+                   }
+                 }
+               }}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Costo de la etiqueta (opcional)"
+             />
+             <TextField
+               fullWidth
+               label="Costo Envase"
+               type="number"
+               value={editProductCostoEnvase === 0 ? '' : editProductCostoEnvase}
+               placeholder="0"
+               onChange={(e) => {
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductCostoEnvase(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0) {
+                     setEditProductCostoEnvase(value);
+                   }
+                 }
+               }}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Costo del envase (opcional)"
+             />
+             <TextField
+               fullWidth
+               label="Costo Caja"
+               type="number"
+               value={editProductCostoCaja === 0 ? '' : editProductCostoCaja}
+               placeholder="0"
+               onChange={(e) => {
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductCostoCaja(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0) {
+                     setEditProductCostoCaja(value);
+                   }
+                 }
+               }}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Costo de la caja (opcional)"
+             />
+             <TextField
+               fullWidth
+               label="Costo Transporte"
+               type="number"
+               value={editProductCostoTransporte === 0 ? '' : editProductCostoTransporte}
+               placeholder="0"
+               onChange={(e) => {
+                 const inputValue = e.target.value;
+                 if (inputValue === '') {
+                   setEditProductCostoTransporte(0);
+                 } else {
+                   const value = parseFloat(inputValue);
+                   if (!isNaN(value) && value >= 0) {
+                     setEditProductCostoTransporte(value);
+                   }
+                 }
+               }}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Costo de transporte (requerido)"
+               required
              />
            </Box>
 
