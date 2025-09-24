@@ -64,7 +64,7 @@ const Dashboard: React.FC = () => {
       setMaterials(data);
       setError(null);
     } catch (err: any) {
-      setError('Error al cargar los productos');
+      setError('Error al cargar los materiales');
     } finally {
       setLoading(false);
     }
@@ -122,10 +122,10 @@ const Dashboard: React.FC = () => {
       await apiService.createMaterial(newMaterial);
       setFormData({ nombre: '', precio_base: '' });
       setError(null);
-      setSuccess('Producto agregado exitosamente');
+      setSuccess('Material agregado exitosamente');
       await fetchMaterials(); // Refresh the list
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Error al crear el producto');
+      setError(err.response?.data?.detail || 'Error al crear el material');
       setSuccess(null);
     } finally {
       setLoading(false);
@@ -163,50 +163,41 @@ const Dashboard: React.FC = () => {
     const originalMaterial = materials.find(m => m.id === editingId);
     if (!originalMaterial) return;
 
-    // Optimistically update the UI
-    const updatedMaterials = materials.map(m =>
-      m.id === editingId
-        ? { ...m, nombre: editFormData.nombre.trim(), precio_base: precioBase.toString() }
-        : m
-    );
-    setMaterials(updatedMaterials);
-    setEditingId(null);
-    setEditFormData({ nombre: '', precio_base: '' });
-
     try {
+      setLoading(true);
       await apiService.updateMaterial(editingId!, {
         nombre: editFormData.nombre.trim(),
         precio_base: precioBase
       });
+      setEditingId(null);
+      setEditFormData({ nombre: '', precio_base: '' });
       setError(null);
-      setSuccess('Producto actualizado exitosamente');
+      setSuccess('Material actualizado exitosamente');
       await fetchMaterials(); // Refresh to get updated data
     } catch (err: any) {
-      // Revert on error
-      setMaterials(materials);
-      setError(err.response?.data?.detail || 'Error al actualizar el producto');
+      setError(err.response?.data?.detail || 'Error al actualizar el material');
       setSuccess(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('¿Está seguro de que desea eliminar este producto?')) {
+    if (!window.confirm('¿Está seguro de que desea eliminar este material?')) {
       return;
     }
     setSuccess(null);
-
-    const originalMaterials = [...materials];
-    setMaterials(materials.filter(m => m.id !== id));
+    setError(null);
 
     try {
+      setLoading(true);
       await apiService.deleteMaterial(id);
-      setError(null);
-      setSuccess('Producto eliminado exitosamente');
+      setSuccess('Material eliminado exitosamente');
+      await fetchMaterials(); // Refresh list
     } catch (err: any) {
-      // Revert on error
-      setMaterials(originalMaterials);
-      setError(err.response?.data?.detail || 'Error al eliminar el producto');
-      setSuccess(null);
+      setError(err.response?.data?.detail || 'Error al eliminar el material');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -294,7 +285,7 @@ const Dashboard: React.FC = () => {
             <Box sx={{ flex: '1 1 300px', minWidth: '200px' }}>
               <TextField
                 fullWidth
-                label="Nombre del Producto"
+                label="Nombre del Material"
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleInputChange}
@@ -322,7 +313,7 @@ const Dashboard: React.FC = () => {
                 fullWidth
                 sx={{ height: '56px' }}
               >
-                {loading ? 'Agregando...' : 'Agregar Producto'}
+                {loading ? 'Agregando...' : 'Agregar Material'}
               </Button>
             </Box>
           </Box>
@@ -332,7 +323,7 @@ const Dashboard: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Producto</strong></TableCell>
+                <TableCell><strong>Material</strong></TableCell>
                 <TableCell align="right"><strong>Precio por Kilogramo</strong></TableCell>
                 <TableCell align="right"><strong>Precio por Gramo</strong></TableCell>
                 <TableCell align="center"><strong>Acciones</strong></TableCell>
@@ -342,7 +333,7 @@ const Dashboard: React.FC = () => {
               {materials.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={4} align="center">
-                    No hay productos registrados
+                    No hay materiales registrados
                   </TableCell>
                 </TableRow>
               ) : (

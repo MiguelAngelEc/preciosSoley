@@ -14,26 +14,12 @@ from ..services.material_service import (
 router = APIRouter(prefix="/api/materials", tags=["materials"])
 
 @router.post("/", response_model=MaterialResponse)
-def create_material_route(material: MaterialCreate, db: Session = Depends(get_db)):
-    # For testing, get the first user
-    user = db.query(User).first()
-    if not user:
-        # Create a test user if none exists
-        from sqlalchemy import Column, String, Enum as SQLEnum
-        from ..models.user import Role
-        from ..utils.security import get_password_hash
-
-        test_user = User(
-            username="test",
-            email="test@test.com",
-            hashed_password=get_password_hash("test"),
-            role=Role.USER
-        )
-        db.add(test_user)
-        db.commit()
-        db.refresh(test_user)
-        user = test_user
-    return create_material(db, material, user)
+def create_material_route(material: MaterialCreate, current_user: User = Depends(get_current_user_dependency), db: Session = Depends(get_db)):
+    try:
+        return create_material(db, material, current_user)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Error interno del servidor")
 
 @router.get("/", response_model=List[MaterialResponse])
 def read_materials(skip: int = 0, limit: int = Query(default=100, le=100), db: Session = Depends(get_db)):
