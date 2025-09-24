@@ -39,6 +39,8 @@ interface ProductManagerProps {
 
 const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -70,11 +72,23 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     fetchTotalCosts();
   }, []);
 
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      const filtered = products.filter(product =>
+        product.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    }
+  }, [products, searchTerm]);
+
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const data = await apiService.getProducts();
       setProducts(data);
+      setFilteredProducts(data);
       setError(null);
     } catch (err: any) {
       setError('Error al cargar los productos');
@@ -299,34 +313,35 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         </Alert>
       )}
 
-      {/* Total Costs Summary */}
-      {totalCosts && (
-        <Card sx={{ mb: 3 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Resumen de Costos Totales
-            </Typography>
-            <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Total Productos
-                </Typography>
-                <Typography variant="h6">
-                  {totalCosts.total_productos}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  Costo Total General
-                </Typography>
-                <Typography variant="h6" color="primary">
-                  ${parseFloat(totalCosts.costo_total_general).toFixed(2)}
-                </Typography>
-              </Box>
+      {/* Search and Product Count */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', gap: 3, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Box sx={{ flex: 1, minWidth: 250 }}>
+              <TextField
+                fullWidth
+                placeholder="Buscar productos por nombre..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <Search sx={{ color: 'action.active', mr: 1 }} />
+                  ),
+                }}
+                size="small"
+              />
             </Box>
-          </CardContent>
-        </Card>
-      )}
+            <Box>
+              <Typography variant="body2" color="text.secondary">
+                Total Productos
+              </Typography>
+              <Typography variant="h6">
+                {totalCosts?.total_productos || products.length}
+              </Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
 
       {/* Create Product Button */}
       <Box sx={{ mb: 3 }}>
@@ -354,14 +369,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {products.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={12} align="center">
                   No hay productos registrados
                 </TableCell>
               </TableRow>
             ) : (
-              products.map((product) => (
+              filteredProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.nombre}</TableCell>
                   <TableCell align="right">
