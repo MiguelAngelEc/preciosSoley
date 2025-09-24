@@ -49,6 +49,23 @@ class ProductMaterialResponse(BaseModel):
 class ProductBase(BaseModel):
     nombre: str
     iva_percentage: float = 21.0
+    margen_publico: float
+    margen_mayorista: float
+    margen_distribuidor: float
+
+    @field_validator('iva_percentage', mode='after')
+    @classmethod
+    def iva_percentage_valid(cls, v):
+        if v < 0 or v > 100:
+            raise ValueError('IVA percentage must be between 0 and 100')
+        return v
+
+    @field_validator('margen_publico', 'margen_mayorista', 'margen_distribuidor', mode='after')
+    @classmethod
+    def margen_valid(cls, v):
+        if v < 0 or v >= 100:
+            raise ValueError('Margin percentage must be between 0 and 99.99')
+        return v
 
 
 class ProductCreate(ProductBase):
@@ -58,6 +75,9 @@ class ProductCreate(ProductBase):
 class ProductUpdate(BaseModel):
     nombre: Optional[str] = None
     iva_percentage: Optional[float] = None
+    margen_publico: Optional[float] = None
+    margen_mayorista: Optional[float] = None
+    margen_distribuidor: Optional[float] = None
     product_materials: Optional[List[ProductMaterialCreate]] = None
 
 
@@ -67,6 +87,12 @@ class ProductResponse(BaseModel):
     costo_total: Decimal
     iva_percentage: float
     iva_amount: Decimal
+    margen_publico: float
+    margen_mayorista: float
+    margen_distribuidor: float
+    precio_publico: Decimal
+    precio_mayorista: Decimal
+    precio_distribuidor: Decimal
     is_active: bool
     created_at: datetime
     updated_at: datetime

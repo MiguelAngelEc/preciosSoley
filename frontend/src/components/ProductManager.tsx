@@ -48,12 +48,18 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [newProductName, setNewProductName] = useState('');
   const [newProductIvaPercentage, setNewProductIvaPercentage] = useState<number | null>(null);
+  const [newProductMargenPublico, setNewProductMargenPublico] = useState<number>(0);
+  const [newProductMargenMayorista, setNewProductMargenMayorista] = useState<number>(0);
+  const [newProductMargenDistribuidor, setNewProductMargenDistribuidor] = useState<number>(0);
   const [newProductMaterials, setNewProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   // Product editing state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editProductName, setEditProductName] = useState('');
   const [editProductIvaPercentage, setEditProductIvaPercentage] = useState<number | null>(null);
+  const [editProductMargenPublico, setEditProductMargenPublico] = useState<number>(0);
+  const [editProductMargenMayorista, setEditProductMargenMayorista] = useState<number>(0);
+  const [editProductMargenDistribuidor, setEditProductMargenDistribuidor] = useState<number>(0);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   useEffect(() => {
@@ -119,6 +125,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       const productData: ProductCreate = {
         nombre: newProductName.trim(),
         iva_percentage: newProductIvaPercentage ?? undefined,
+        margen_publico: newProductMargenPublico,
+        margen_mayorista: newProductMargenMayorista,
+        margen_distribuidor: newProductMargenDistribuidor,
         product_materials: newProductMaterials
       };
 
@@ -126,6 +135,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setShowCreateDialog(false);
       setNewProductName('');
       setNewProductIvaPercentage(null);
+      setNewProductMargenPublico(0);
+      setNewProductMargenMayorista(0);
+      setNewProductMargenDistribuidor(0);
       setNewProductMaterials([]);
       setError(null);
       setSuccess('Producto creado exitosamente');
@@ -142,6 +154,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     setEditingProduct(product);
     setEditProductName(product.nombre);
     setEditProductIvaPercentage(product.iva_percentage);
+    setEditProductMargenPublico(product.margen_publico);
+    setEditProductMargenMayorista(product.margen_mayorista);
+    setEditProductMargenDistribuidor(product.margen_distribuidor);
     setEditProductMaterials(
       product.product_materials.map(pm => ({
         material_id: pm.material_id,
@@ -181,6 +196,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       const productData: ProductCreate = {
         nombre: editProductName.trim(),
         iva_percentage: editProductIvaPercentage ?? undefined,
+        margen_publico: editProductMargenPublico,
+        margen_mayorista: editProductMargenMayorista,
+        margen_distribuidor: editProductMargenDistribuidor,
         product_materials: editProductMaterials
       };
 
@@ -188,6 +206,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setEditingProduct(null);
       setEditProductName('');
       setEditProductIvaPercentage(null);
+      setEditProductMargenPublico(0);
+      setEditProductMargenMayorista(0);
+      setEditProductMargenDistribuidor(0);
       setEditProductMaterials([]);
       setError(null);
       setSuccess('Producto actualizado exitosamente');
@@ -330,13 +351,19 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
               <TableCell align="right"><strong>Costo Total</strong></TableCell>
               <TableCell align="right"><strong>IVA (%)</strong></TableCell>
               <TableCell align="right"><strong>IVA Monto</strong></TableCell>
+              <TableCell align="right"><strong>Margen Público (%)</strong></TableCell>
+              <TableCell align="right"><strong>Precio Público</strong></TableCell>
+              <TableCell align="right"><strong>Margen Mayorista (%)</strong></TableCell>
+              <TableCell align="right"><strong>Precio Mayorista</strong></TableCell>
+              <TableCell align="right"><strong>Margen Distribuidor (%)</strong></TableCell>
+              <TableCell align="right"><strong>Precio Distribuidor</strong></TableCell>
               <TableCell align="center"><strong>Acciones</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {products.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={12} align="center">
                   No hay productos registrados
                 </TableCell>
               </TableRow>
@@ -364,6 +391,24 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   </TableCell>
                   <TableCell align="right">
                     ${parseFloat(product.iva_amount).toFixed(2)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {product.margen_publico}%
+                  </TableCell>
+                  <TableCell align="right">
+                    ${parseFloat(product.precio_publico).toFixed(2)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {product.margen_mayorista}%
+                  </TableCell>
+                  <TableCell align="right">
+                    ${parseFloat(product.precio_mayorista).toFixed(2)}
+                  </TableCell>
+                  <TableCell align="right">
+                    {product.margen_distribuidor}%
+                  </TableCell>
+                  <TableCell align="right">
+                    ${parseFloat(product.precio_distribuidor).toFixed(2)}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -425,11 +470,60 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             inputProps={{ min: 0, max: 100, step: 0.01 }}
             sx={{ mb: 2 }}
             helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
-          />
+           />
 
-          <Typography variant="h6" gutterBottom>
-            Materiales
-          </Typography>
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Márgenes de Ganancia
+           </Typography>
+
+           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+             <TextField
+               fullWidth
+               label="Margen Público (%)"
+               type="number"
+               value={newProductMargenPublico}
+               onChange={(e) => {
+                 const value = parseFloat(e.target.value);
+                 if (!isNaN(value) && value >= 0 && value < 100) {
+                   setNewProductMargenPublico(value);
+                 }
+               }}
+               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+               helperText="Margen para ventas al público"
+             />
+             <TextField
+               fullWidth
+               label="Margen Mayorista (%)"
+               type="number"
+               value={newProductMargenMayorista}
+               onChange={(e) => {
+                 const value = parseFloat(e.target.value);
+                 if (!isNaN(value) && value >= 0 && value < 100) {
+                   setNewProductMargenMayorista(value);
+                 }
+               }}
+               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+               helperText="Margen para ventas mayoristas"
+             />
+             <TextField
+               fullWidth
+               label="Margen Distribuidor (%)"
+               type="number"
+               value={newProductMargenDistribuidor}
+               onChange={(e) => {
+                 const value = parseFloat(e.target.value);
+                 if (!isNaN(value) && value >= 0 && value < 100) {
+                   setNewProductMargenDistribuidor(value);
+                 }
+               }}
+               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+               helperText="Margen para ventas a distribuidores"
+             />
+           </Box>
+
+           <Typography variant="h6" gutterBottom>
+             Materiales
+           </Typography>
 
           {newProductMaterials.map((pm, index) => (
             <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -519,11 +613,60 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             inputProps={{ min: 0, max: 100, step: 0.01 }}
             sx={{ mb: 2 }}
             helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
-          />
+           />
 
-          <Typography variant="h6" gutterBottom>
-            Materiales
-          </Typography>
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Márgenes de Ganancia
+           </Typography>
+
+           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+             <TextField
+               fullWidth
+               label="Margen Público (%)"
+               type="number"
+               value={editProductMargenPublico}
+               onChange={(e) => {
+                 const value = parseFloat(e.target.value);
+                 if (!isNaN(value) && value >= 0 && value < 100) {
+                   setEditProductMargenPublico(value);
+                 }
+               }}
+               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+               helperText="Margen para ventas al público"
+             />
+             <TextField
+               fullWidth
+               label="Margen Mayorista (%)"
+               type="number"
+               value={editProductMargenMayorista}
+               onChange={(e) => {
+                 const value = parseFloat(e.target.value);
+                 if (!isNaN(value) && value >= 0 && value < 100) {
+                   setEditProductMargenMayorista(value);
+                 }
+               }}
+               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+               helperText="Margen para ventas mayoristas"
+             />
+             <TextField
+               fullWidth
+               label="Margen Distribuidor (%)"
+               type="number"
+               value={editProductMargenDistribuidor}
+               onChange={(e) => {
+                 const value = parseFloat(e.target.value);
+                 if (!isNaN(value) && value >= 0 && value < 100) {
+                   setEditProductMargenDistribuidor(value);
+                 }
+               }}
+               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+               helperText="Margen para ventas a distribuidores"
+             />
+           </Box>
+
+           <Typography variant="h6" gutterBottom>
+             Materiales
+           </Typography>
 
           {editProductMaterials.map((pm, index) => (
             <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

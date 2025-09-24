@@ -46,7 +46,10 @@ def create_product(db: Session, product: ProductCreate, user: User) -> ProductRe
     db_product = Product(
         user_id=user.id,
         nombre=product.nombre,
-        iva_percentage=product.iva_percentage
+        iva_percentage=product.iva_percentage,
+        margen_publico=product.margen_publico,
+        margen_mayorista=product.margen_mayorista,
+        margen_distribuidor=product.margen_distribuidor
     )
     db.add(db_product)
     db.flush()  # Get the product ID
@@ -157,6 +160,15 @@ def update_product(db: Session, product_id: int, product_update: ProductUpdate, 
 
     if product_update.iva_percentage is not None:
         product.iva_percentage = product_update.iva_percentage
+
+    if product_update.margen_publico is not None:
+        product.margen_publico = product_update.margen_publico
+
+    if product_update.margen_mayorista is not None:
+        product.margen_mayorista = product_update.margen_mayorista
+
+    if product_update.margen_distribuidor is not None:
+        product.margen_distribuidor = product_update.margen_distribuidor
 
     # Update materials if provided
     if product_update.product_materials is not None:
@@ -375,6 +387,12 @@ def _build_product_response(product: Product) -> ProductResponse:
         costo_total=product.calcular_costo_total(),
         iva_percentage=product.iva_percentage or 21.0,
         iva_amount=product.iva_amount,
+        margen_publico=product.margen_publico,
+        margen_mayorista=product.margen_mayorista,
+        margen_distribuidor=product.margen_distribuidor,
+        precio_publico=product.precio_publico,
+        precio_mayorista=product.precio_mayorista,
+        precio_distribuidor=product.precio_distribuidor,
         is_active=product.is_active,
         created_at=product.created_at,
         updated_at=product.updated_at,

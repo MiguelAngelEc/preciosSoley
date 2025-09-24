@@ -53,6 +53,12 @@ export interface Product {
   costo_total: string;
   iva_percentage: number;
   iva_amount: string;
+  margen_publico: number;
+  margen_mayorista: number;
+  margen_distribuidor: number;
+  precio_publico: string;
+  precio_mayorista: string;
+  precio_distribuidor: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -62,6 +68,9 @@ export interface Product {
 export interface ProductCreate {
   nombre: string;
   iva_percentage?: number;
+  margen_publico: number;
+  margen_mayorista: number;
+  margen_distribuidor: number;
   product_materials: ProductMaterialCreate[];
 }
 
@@ -73,6 +82,9 @@ export interface ProductMaterialCreate {
 export interface ProductUpdate {
   nombre?: string;
   iva_percentage?: number;
+  margen_publico?: number;
+  margen_mayorista?: number;
+  margen_distribuidor?: number;
   product_materials?: ProductMaterialCreate[];
 }
 
