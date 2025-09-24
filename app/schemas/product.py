@@ -52,6 +52,10 @@ class ProductBase(BaseModel):
     margen_publico: float
     margen_mayorista: float
     margen_distribuidor: float
+    costo_etiqueta: Optional[Decimal] = 0.0
+    costo_envase: Optional[Decimal] = 0.0
+    costo_caja: Optional[Decimal] = 0.0
+    costo_transporte: Decimal
 
     @field_validator('iva_percentage', mode='after')
     @classmethod
@@ -67,6 +71,13 @@ class ProductBase(BaseModel):
             raise ValueError('Margin percentage must be between 0 and 99.99')
         return v
 
+    @field_validator('costo_etiqueta', 'costo_envase', 'costo_caja', 'costo_transporte', mode='after')
+    @classmethod
+    def costo_non_negative(cls, v):
+        if v is not None and v < 0:
+            raise ValueError('Cost fields must be non-negative')
+        return v
+
 
 class ProductCreate(ProductBase):
     product_materials: List[ProductMaterialCreate] = []
@@ -78,6 +89,10 @@ class ProductUpdate(BaseModel):
     margen_publico: Optional[float] = None
     margen_mayorista: Optional[float] = None
     margen_distribuidor: Optional[float] = None
+    costo_etiqueta: Optional[Decimal] = None
+    costo_envase: Optional[Decimal] = None
+    costo_caja: Optional[Decimal] = None
+    costo_transporte: Optional[Decimal] = None
     product_materials: Optional[List[ProductMaterialCreate]] = None
 
 
@@ -85,6 +100,10 @@ class ProductResponse(BaseModel):
     id: int
     nombre: str
     costo_total: Decimal
+    costo_etiqueta: Decimal
+    costo_envase: Decimal
+    costo_caja: Decimal
+    costo_transporte: Decimal
     iva_percentage: float
     iva_publico: Decimal
     iva_mayorista: Decimal

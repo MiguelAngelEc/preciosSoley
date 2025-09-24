@@ -17,6 +17,10 @@ class Product(BaseEntity):
     margen_publico = Column(Numeric(5, 2), nullable=False)  # Profit margin for retail sales
     margen_mayorista = Column(Numeric(5, 2), nullable=False)  # Profit margin for wholesale sales
     margen_distribuidor = Column(Numeric(5, 2), nullable=False)  # Profit margin for distributor sales
+    costo_etiqueta = Column(Numeric(10, 2), nullable=True, default=0.0)  # Label cost
+    costo_envase = Column(Numeric(10, 2), nullable=True, default=0.0)  # Packaging cost
+    costo_caja = Column(Numeric(10, 2), nullable=True, default=0.0)  # Box/container cost
+    costo_transporte = Column(Numeric(10, 2), nullable=False)  # Transportation cost
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     is_active = Column(Boolean, default=True)
@@ -25,11 +29,16 @@ class Product(BaseEntity):
     product_materials = relationship("ProductMaterial", back_populates="product", cascade="all, delete-orphan")
 
     def calcular_costo_total(self) -> Decimal:
-        """Calculate total cost of all materials in this product"""
+        """Calculate total cost of all materials and additional costs in this product"""
         total = Decimal('0')
         for pm in self.product_materials:
             if pm.material and pm.material.is_active:
                 total += pm.material.calcular_precio_cantidad(pm.cantidad)
+        # Add additional costs
+        total += self.costo_etiqueta or Decimal('0')
+        total += self.costo_envase or Decimal('0')
+        total += self.costo_caja or Decimal('0')
+        total += self.costo_transporte
         return total
 
     @hybrid_property

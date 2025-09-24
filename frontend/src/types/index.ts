@@ -51,6 +51,10 @@ export interface Product {
   id: number;
   nombre: string;
   costo_total: string;
+  costo_etiqueta: string;
+  costo_envase: string;
+  costo_caja: string;
+  costo_transporte: string;
   iva_percentage: number;
   iva_publico: string;
   iva_mayorista: string;
@@ -76,6 +80,10 @@ export interface ProductCreate {
   margen_publico: number;
   margen_mayorista: number;
   margen_distribuidor: number;
+  costo_etiqueta?: number | string;
+  costo_envase?: number | string;
+  costo_caja?: number | string;
+  costo_transporte: number | string;
   product_materials: ProductMaterialCreate[];
 }
 

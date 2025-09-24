@@ -49,7 +49,11 @@ def create_product(db: Session, product: ProductCreate, user: User) -> ProductRe
         iva_percentage=product.iva_percentage,
         margen_publico=product.margen_publico,
         margen_mayorista=product.margen_mayorista,
-        margen_distribuidor=product.margen_distribuidor
+        margen_distribuidor=product.margen_distribuidor,
+        costo_etiqueta=product.costo_etiqueta,
+        costo_envase=product.costo_envase,
+        costo_caja=product.costo_caja,
+        costo_transporte=product.costo_transporte
     )
     db.add(db_product)
     db.flush()  # Get the product ID
@@ -169,6 +173,18 @@ def update_product(db: Session, product_id: int, product_update: ProductUpdate, 
 
     if product_update.margen_distribuidor is not None:
         product.margen_distribuidor = product_update.margen_distribuidor
+
+    if product_update.costo_etiqueta is not None:
+        product.costo_etiqueta = product_update.costo_etiqueta
+
+    if product_update.costo_envase is not None:
+        product.costo_envase = product_update.costo_envase
+
+    if product_update.costo_caja is not None:
+        product.costo_caja = product_update.costo_caja
+
+    if product_update.costo_transporte is not None:
+        product.costo_transporte = product_update.costo_transporte
 
     # Update materials if provided
     if product_update.product_materials is not None:
@@ -385,6 +401,10 @@ def _build_product_response(product: Product) -> ProductResponse:
         id=product.id,
         nombre=product.nombre,
         costo_total=product.calcular_costo_total(),
+        costo_etiqueta=product.costo_etiqueta or Decimal('0'),
+        costo_envase=product.costo_envase or Decimal('0'),
+        costo_caja=product.costo_caja or Decimal('0'),
+        costo_transporte=product.costo_transporte,
         iva_percentage=product.iva_percentage or 21.0,
         iva_publico=product.iva_publico,
         iva_mayorista=product.iva_mayorista,

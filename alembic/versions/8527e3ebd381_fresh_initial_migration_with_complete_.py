@@ -19,7 +19,13 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    pass
+    # Add new cost fields to products table
+    op.add_column('products', sa.Column('costo_etiqueta', sa.Numeric(10, 2), nullable=True, default=0.0))
+    op.add_column('products', sa.Column('costo_envase', sa.Numeric(10, 2), nullable=True, default=0.0))
+    op.add_column('products', sa.Column('costo_caja', sa.Numeric(10, 2), nullable=True, default=0.0))
+    op.add_column('products', sa.Column('costo_transporte', sa.Numeric(10, 2), nullable=False, default=0.0))
+    # Update existing products to have default value for costo_transporte
+    op.execute("UPDATE products SET costo_transporte = 0.0 WHERE costo_transporte IS NULL")
 
 
 def downgrade() -> None:
