@@ -13,7 +13,8 @@ from ..schemas.product import (
 )
 from ..services.product_service import (
     create_product, get_product, get_products, update_product, delete_product,
-    add_material_to_product, remove_material_from_product, calculate_total_costs
+    add_material_to_product, remove_material_from_product, calculate_total_costs,
+    duplicate_product
 )
 from ..utils.unit_converter import calculate_cost_for_quantity
 # from .deps import get_current_user
@@ -206,3 +207,24 @@ def calculate_cost_by_unit(
         "precio_mayorista_con_iva": str(product.precio_mayorista_con_iva),
         "precio_distribuidor_con_iva": str(product.precio_distribuidor_con_iva)
     }
+
+
+@router.post("/{product_id}/duplicate")
+def duplicate_product_endpoint(
+    product_id: int,
+    duplicate_data: dict,  # {nombre: str, peso_empaque: float}
+    db: Session = Depends(get_db)
+):
+    """Duplicate existing product with new package weight"""
+    # For testing, get the first user
+    user = db.query(User).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No users found")
+    result = duplicate_product(
+        db,
+        product_id,
+        duplicate_data["nombre"],
+        duplicate_data["peso_empaque"],
+        user
+    )
+    return result.model_dump()

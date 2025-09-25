@@ -28,7 +28,8 @@ import {
   Edit,
   Delete,
   Remove,
-  Search
+  Search,
+  ContentCopy
 } from '@mui/icons-material';
 import apiService from '../services/api';
 import { Product, ProductCreate, ProductMaterialCreate, Material, CostosTotalesResponse } from '../types';
@@ -75,6 +76,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   // Product detail modal state
+  // Product duplicate state
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [duplicatingProduct, setDuplicatingProduct] = useState<Product | null>(null);
+  const [duplicateName, setDuplicateName] = useState('');
+  const [duplicatePesoEmpaque, setDuplicatePesoEmpaque] = useState<number | null>(null);
   const [detailProduct, setDetailProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -285,6 +291,40 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     }
   };
 
+  const handleSaveDuplicate = async () => {
+    if (!duplicatingProduct) return;
+
+    if (!duplicateName.trim()) {
+      setError('El nombre del producto es requerido');
+      return;
+    }
+
+    if (!duplicatePesoEmpaque) {
+      setError('Debe seleccionar un peso del empaque');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await apiService.duplicateProduct(duplicatingProduct.id, {
+        nombre: duplicateName.trim(),
+        peso_empaque: duplicatePesoEmpaque
+      });
+      setShowDuplicateDialog(false);
+      setDuplicatingProduct(null);
+      setDuplicateName('');
+      setDuplicatePesoEmpaque(null);
+      setError(null);
+      setSuccess('Producto duplicado exitosamente');
+      await fetchProducts();
+      await fetchTotalCosts();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Error al duplicar el producto');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDeleteProduct = async (productId: number) => {
     if (!window.confirm('¿Está seguro de que desea eliminar este producto?')) {
       return;
@@ -304,6 +344,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     }
   };
 
+  const handleDuplicateProduct = (product: Product) => {
+    setDuplicatingProduct(product);
+    setDuplicateName(`${product.nombre} (Copia)`);
+    setDuplicatePesoEmpaque(product.peso_empaque ?? null);
+    setShowDuplicateDialog(true);
+  };
   const addMaterialToNewProduct = () => {
     setNewProductMaterials([...newProductMaterials, { material_id: 0, cantidad: '0' }]);
   };
@@ -331,7 +377,6 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const removeEditProductMaterial = (index: number) => {
     setEditProductMaterials(editProductMaterials.filter((_, i) => i !== index));
   };
-
 
   const calculateMaterialCost = (materialId: number | string, cantidad: string) => {
     if (!materialId || materialId === '' || !cantidad || cantidad === '') return 0;
@@ -453,6 +498,14 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                       size="small"
                     >
                       <Edit />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDuplicateProduct(product)}
+                      color="secondary"
+                      size="small"
+                      title="Duplicar producto"
+                    >
+                      <ContentCopy />
                     </IconButton>
                     <IconButton
                       onClick={() => handleDeleteProduct(product.id)}
@@ -1011,6 +1064,52 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
           <Button onClick={() => setEditingProduct(null)}>Cancelar</Button>
           <Button onClick={handleSaveEdit} variant="contained" disabled={loading}>
             Guardar Cambios
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Duplicate Product Dialog */}
+      <Dialog open={showDuplicateDialog} onClose={() => setShowDuplicateDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Duplicar Producto: {duplicatingProduct?.nombre}</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Nuevo Nombre del Producto"
+            value={duplicateName}
+            onChange={(e) => setDuplicateName(e.target.value)}
+            sx={{ mb: 2, mt: 1 }}
+            required
+          />
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            Peso del Empaque
+          </Typography>
+
+          <FormControl fullWidth required sx={{ mb: 2 }}>
+            <Select
+              value={duplicatePesoEmpaque || ''}
+              onChange={(e) => setDuplicatePesoEmpaque(Number(e.target.value) || null)}
+              displayEmpty
+            >
+              <MenuItem value="">
+                <em>Seleccionar peso del empaque</em>
+              </MenuItem>
+              <MenuItem value={100}>100g - Envase Pequeño</MenuItem>
+              <MenuItem value={500}>500g - Envase Mediano</MenuItem>
+              <MenuItem value={1000}>1000g - Envase Grande (1kg)</MenuItem>
+              <MenuItem value={3785}>3785g - Galón</MenuItem>
+              <MenuItem value={20000}>20000g - Caneca (20kg)</MenuItem>
+            </Select>
+          </FormControl>
+
+          <Typography variant="body2" color="text.secondary">
+            Se duplicarán todos los materiales y configuraciones del producto original, solo cambiando el nombre y el peso del empaque.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowDuplicateDialog(false)}>Cancelar</Button>
+          <Button onClick={handleSaveDuplicate} variant="contained" disabled={loading}>
+            Duplicar Producto
           </Button>
         </DialogActions>
       </Dialog>

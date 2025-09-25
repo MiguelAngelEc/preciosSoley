@@ -355,6 +355,64 @@ def remove_material_from_product(db: Session, product_id: int, material_id: int,
 
     return True
 
+def duplicate_product(db: Session, product_id: int, new_name: str, new_peso_empaque: float, user: User) -> ProductResponse:
+    """Duplicate existing product with new name and package weight"""
+    # Get original product with all relationships
+    original = db.query(Product).options(
+        joinedload(Product.product_materials).joinedload(ProductMaterial.material)
+    ).filter(
+        Product.id == product_id,
+        Product.user_id == user.id,
+        Product.is_active == True
+    ).first()
+
+    if not original:
+        raise HTTPException(status_code=404, detail="Original product not found")
+
+    # Validate new name uniqueness
+    existing = db.query(Product).filter(
+        Product.nombre == new_name.strip(),
+        Product.user_id == user.id,
+        Product.is_active == True
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Product name already exists")
+
+    # Create duplicate product
+    duplicate = Product(
+        user_id=user.id,
+        nombre=new_name.strip(),
+        iva_percentage=original.iva_percentage,
+        margen_publico=original.margen_publico,
+        margen_mayorista=original.margen_mayorista,
+        margen_distribuidor=original.margen_distribuidor,
+        costo_etiqueta=original.costo_etiqueta,
+        costo_envase=original.costo_envase,
+        costo_caja=original.costo_caja,
+        costo_transporte=original.costo_transporte,
+        peso_ingredientes_base=original.peso_ingredientes_base,
+        peso_final_producido=original.peso_final_producido,
+        peso_empaque=new_peso_empaque  # NEW PACKAGE WEIGHT
+    )
+    db.add(duplicate)
+    db.flush()
+
+    # Duplicate all materials with same quantities
+    for original_pm in original.product_materials:
+        duplicate_pm = ProductMaterial(
+            product_id=duplicate.id,
+            material_id=original_pm.material_id,
+            cantidad=original_pm.cantidad
+        )
+        db.add(duplicate_pm)
+
+    db.commit()
+    db.refresh(duplicate)
+
+    # Return with relationships loaded
+    return _build_product_response(duplicate)
+
+
 
 def calculate_total_costs(db: Session, user: User) -> CostosTotalesResponse:
     products = db.query(Product).options(
