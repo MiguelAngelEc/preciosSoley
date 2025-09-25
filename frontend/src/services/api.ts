@@ -148,6 +148,11 @@ class ApiService {
     });
     return response.data;
   }
+
+  async duplicateProduct(productId: number, duplicateData: { nombre: string; peso_empaque: number }): Promise<Product> {
+    const response: AxiosResponse<Product> = await this.api.post(`/api/products/${productId}/duplicate`, duplicateData);
+    return response.data;
+  }
 }
 
 // Create and export a singleton instance
