@@ -1066,6 +1066,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             Guardar Cambios
           </Button>
         </DialogActions>
+      </Dialog>
+
       {/* Duplicate Product Dialog */}
       <Dialog open={showDuplicateDialog} onClose={() => setShowDuplicateDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Duplicar Producto: {duplicatingProduct?.nombre}</DialogTitle>
@@ -1110,7 +1112,6 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             Duplicar Producto
           </Button>
         </DialogActions>
-      </Dialog>
       </Dialog>
 
       {/* Product Detail Modal */}
