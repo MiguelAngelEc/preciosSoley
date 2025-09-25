@@ -56,6 +56,9 @@ class ProductBase(BaseModel):
     costo_envase: Optional[Decimal] = 0.0
     costo_caja: Optional[Decimal] = 0.0
     costo_transporte: Decimal
+    peso_ingredientes_base: Optional[float] = None
+    peso_final_producido: Optional[float] = None
+    peso_empaque: Optional[float] = None
 
     @field_validator('iva_percentage', mode='after')
     @classmethod
@@ -93,6 +96,9 @@ class ProductUpdate(BaseModel):
     costo_envase: Optional[Decimal] = None
     costo_caja: Optional[Decimal] = None
     costo_transporte: Optional[Decimal] = None
+    peso_ingredientes_base: Optional[float] = None
+    peso_final_producido: Optional[float] = None
+    peso_empaque: Optional[float] = None
     product_materials: Optional[List[ProductMaterialCreate]] = None
 
 
@@ -117,6 +123,16 @@ class ProductResponse(BaseModel):
     precio_publico_con_iva: Decimal
     precio_mayorista_con_iva: Decimal
     precio_distribuidor_con_iva: Decimal
+    peso_ingredientes_base: Optional[float] = None
+    peso_final_producido: Optional[float] = None
+    peso_empaque: Optional[float] = None
+    costo_paquete: Decimal
+    precio_publico_paquete: Decimal
+    precio_mayorista_paquete: Decimal
+    precio_distribuidor_paquete: Decimal
+    precio_publico_con_iva_paquete: Decimal
+    precio_mayorista_con_iva_paquete: Decimal
+    precio_distribuidor_con_iva_paquete: Decimal
     is_active: bool
     created_at: datetime
     updated_at: datetime

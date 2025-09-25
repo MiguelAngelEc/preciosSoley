@@ -57,6 +57,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [newProductCostoEnvase, setNewProductCostoEnvase] = useState<number>(0);
   const [newProductCostoCaja, setNewProductCostoCaja] = useState<number>(0);
   const [newProductCostoTransporte, setNewProductCostoTransporte] = useState<number>(0);
+  const [newProductPesoEmpaque, setNewProductPesoEmpaque] = useState<number | null>(null);
   const [newProductMaterials, setNewProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   // Product editing state
@@ -70,6 +71,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [editProductCostoEnvase, setEditProductCostoEnvase] = useState<number>(0);
   const [editProductCostoCaja, setEditProductCostoCaja] = useState<number>(0);
   const [editProductCostoTransporte, setEditProductCostoTransporte] = useState<number>(0);
+  const [editProductPesoEmpaque, setEditProductPesoEmpaque] = useState<number | null>(null);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
   // Product detail modal state
@@ -145,6 +147,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       return;
     }
 
+    // Validate peso_empaque is selected
+    if (!newProductPesoEmpaque) {
+      setError('Debe seleccionar un peso del empaque');
+      return;
+    }
+
     try {
       setLoading(true);
       const productData: ProductCreate = {
@@ -157,6 +165,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         costo_envase: newProductCostoEnvase,
         costo_caja: newProductCostoCaja,
         costo_transporte: newProductCostoTransporte,
+        peso_empaque: newProductPesoEmpaque ?? undefined,
         product_materials: newProductMaterials
       };
 
@@ -171,6 +180,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setNewProductCostoEnvase(0);
       setNewProductCostoCaja(0);
       setNewProductCostoTransporte(0);
+      setNewProductPesoEmpaque(null);
       setNewProductMaterials([]);
       setError(null);
       setSuccess('Producto creado exitosamente');
@@ -194,6 +204,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     setEditProductCostoEnvase(parseFloat(product.costo_envase));
     setEditProductCostoCaja(parseFloat(product.costo_caja));
     setEditProductCostoTransporte(parseFloat(product.costo_transporte));
+    setEditProductPesoEmpaque(product.peso_empaque ?? null);
     setEditProductMaterials(
       product.product_materials.map(pm => ({
         material_id: pm.material_id,
@@ -212,6 +223,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
 
     if (editProductMaterials.length === 0) {
       setError('Debe tener al menos un material');
+      return;
+    }
+
+    // Validate peso_empaque is selected
+    if (!editProductPesoEmpaque) {
+      setError('Debe seleccionar un peso del empaque');
       return;
     }
 
@@ -240,6 +257,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         costo_envase: editProductCostoEnvase,
         costo_caja: editProductCostoCaja,
         costo_transporte: editProductCostoTransporte,
+        peso_empaque: editProductPesoEmpaque ?? undefined,
         product_materials: editProductMaterials
       };
 
@@ -254,6 +272,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setEditProductCostoEnvase(0);
       setEditProductCostoCaja(0);
       setEditProductCostoTransporte(0);
+      setEditProductPesoEmpaque(null);
       setEditProductMaterials([]);
       setError(null);
       setSuccess('Producto actualizado exitosamente');
@@ -406,18 +425,18 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
             ) : (
               filteredProducts.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell>{product.nombre}</TableCell>
+                  <TableCell>{product.nombre} ({product.peso_empaque}g)</TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.costo_total).toFixed(2)}
+                    ${parseFloat(product.costo_paquete).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.precio_publico_con_iva).toFixed(2)}
+                    ${parseFloat(product.precio_publico_con_iva_paquete).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.precio_mayorista_con_iva).toFixed(2)}
+                    ${parseFloat(product.precio_mayorista_con_iva_paquete).toFixed(2)}
                   </TableCell>
                   <TableCell align="right">
-                    ${parseFloat(product.precio_distribuidor_con_iva).toFixed(2)}
+                    ${parseFloat(product.precio_distribuidor_con_iva_paquete).toFixed(2)}
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
@@ -642,6 +661,30 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                helperText="Costo de transporte (requerido)"
                required
              />
+           </Box>
+
+
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Peso del Empaque
+           </Typography>
+
+           <Box sx={{ mb: 2 }}>
+             <FormControl fullWidth required>
+               <Select
+                 value={newProductPesoEmpaque || ''}
+                 onChange={(e) => setNewProductPesoEmpaque(Number(e.target.value) || null)}
+                 displayEmpty
+               >
+                 <MenuItem value="">
+                   <em>Seleccionar peso del empaque</em>
+                 </MenuItem>
+                 <MenuItem value={100}>100g - Envase Pequeño</MenuItem>
+                 <MenuItem value={500}>500g - Envase Mediano</MenuItem>
+                 <MenuItem value={1000}>1000g - Envase Grande (1kg)</MenuItem>
+                 <MenuItem value={3785}>3785g - Galón</MenuItem>
+                 <MenuItem value={20000}>20000g - Caneca (20kg)</MenuItem>
+               </Select>
+             </FormControl>
            </Box>
 
            <Typography variant="h6" gutterBottom>
@@ -893,6 +936,30 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
              />
            </Box>
 
+
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Peso del Empaque
+           </Typography>
+
+           <Box sx={{ mb: 2 }}>
+             <FormControl fullWidth required>
+               <Select
+                 value={editProductPesoEmpaque || ''}
+                 onChange={(e) => setEditProductPesoEmpaque(Number(e.target.value) || null)}
+                 displayEmpty
+               >
+                 <MenuItem value="">
+                   <em>Seleccionar peso del empaque</em>
+                 </MenuItem>
+                 <MenuItem value={100}>100g - Envase Pequeño</MenuItem>
+                 <MenuItem value={500}>500g - Envase Mediano</MenuItem>
+                 <MenuItem value={1000}>1000g - Envase Grande (1kg)</MenuItem>
+                 <MenuItem value={3785}>3785g - Galón</MenuItem>
+                 <MenuItem value={20000}>20000g - Caneca (20kg)</MenuItem>
+               </Select>
+             </FormControl>
+           </Box>
+
            <Typography variant="h6" gutterBottom>
              Materiales
            </Typography>
@@ -997,6 +1064,33 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                 </CardContent>
               </Card>
 
+              {/* Package Information */}
+              <Card sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Información del Empaque
+                  </Typography>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Peso del Empaque
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {detailProduct.peso_empaque}g
+                      </Typography>
+                    </Box>
+                    <Box>
+                      <Typography variant="body2" color="text.secondary">
+                        Costo del Paquete
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        ${parseFloat(detailProduct.costo_paquete).toFixed(2)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+
               {/* Materials Breakdown */}
               <Card sx={{ mb: 3 }}>
                 <CardContent>
@@ -1052,16 +1146,16 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 2 }}>
                     <Box sx={{ p: 2, bgcolor: 'success.light', borderRadius: 1, color: 'white' }}>
                       <Typography variant="body2" fontWeight="medium">
-                        PVP (Público)
+                        PVP (Público) - Paquete
                       </Typography>
                       <Typography variant="h6">
-                        ${parseFloat(detailProduct.precio_publico).toFixed(2)}
+                        ${parseFloat(detailProduct.precio_publico_paquete).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
-                        + IVA: ${parseFloat(detailProduct.iva_publico).toFixed(2)}
+                        + IVA: ${(parseFloat(detailProduct.precio_publico_con_iva_paquete) - parseFloat(detailProduct.precio_publico_paquete)).toFixed(2)}
                       </Typography>
                       <Typography variant="body2" fontWeight="bold">
-                        Total: ${parseFloat(detailProduct.precio_publico_con_iva).toFixed(2)}
+                        Total: ${parseFloat(detailProduct.precio_publico_con_iva_paquete).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
                         Margen: {detailProduct.margen_publico}%
@@ -1069,16 +1163,16 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                     </Box>
                     <Box sx={{ p: 2, bgcolor: 'warning.light', borderRadius: 1, color: 'white' }}>
                       <Typography variant="body2" fontWeight="medium">
-                        PVM (Mayorista)
+                        PVM (Mayorista) - Paquete
                       </Typography>
                       <Typography variant="h6">
-                        ${parseFloat(detailProduct.precio_mayorista).toFixed(2)}
+                        ${parseFloat(detailProduct.precio_mayorista_paquete).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
-                        + IVA: ${parseFloat(detailProduct.iva_mayorista).toFixed(2)}
+                        + IVA: ${(parseFloat(detailProduct.precio_mayorista_con_iva_paquete) - parseFloat(detailProduct.precio_mayorista_paquete)).toFixed(2)}
                       </Typography>
                       <Typography variant="body2" fontWeight="bold">
-                        Total: ${parseFloat(detailProduct.precio_mayorista_con_iva).toFixed(2)}
+                        Total: ${parseFloat(detailProduct.precio_mayorista_con_iva_paquete).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
                         Margen: {detailProduct.margen_mayorista}%
@@ -1086,16 +1180,16 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                     </Box>
                     <Box sx={{ p: 2, bgcolor: 'info.light', borderRadius: 1, color: 'white' }}>
                       <Typography variant="body2" fontWeight="medium">
-                        PVD (Distribuidor)
+                        PVD (Distribuidor) - Paquete
                       </Typography>
                       <Typography variant="h6">
-                        ${parseFloat(detailProduct.precio_distribuidor).toFixed(2)}
+                        ${parseFloat(detailProduct.precio_distribuidor_paquete).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
-                        + IVA: ${parseFloat(detailProduct.iva_distribuidor).toFixed(2)}
+                        + IVA: ${(parseFloat(detailProduct.precio_distribuidor_con_iva_paquete) - parseFloat(detailProduct.precio_distribuidor_paquete)).toFixed(2)}
                       </Typography>
                       <Typography variant="body2" fontWeight="bold">
-                        Total: ${parseFloat(detailProduct.precio_distribuidor_con_iva).toFixed(2)}
+                        Total: ${parseFloat(detailProduct.precio_distribuidor_con_iva_paquete).toFixed(2)}
                       </Typography>
                       <Typography variant="body2">
                         Margen: {detailProduct.margen_distribuidor}%
@@ -1104,6 +1198,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   </Box>
                 </CardContent>
               </Card>
+
             </Box>
           )}
         </DialogContent>

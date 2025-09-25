@@ -1,9 +1,11 @@
 from typing import List
+from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from ..database import get_db
 from ..models.user import User
+from ..models.product import Product, ProductMaterial
 from ..schemas.product import (
     ProductCreate, ProductUpdate, ProductResponse,
     ProductMaterialCreate, ProductMaterialResponse,
@@ -13,6 +15,7 @@ from ..services.product_service import (
     create_product, get_product, get_products, update_product, delete_product,
     add_material_to_product, remove_material_from_product, calculate_total_costs
 )
+from ..utils.unit_converter import calculate_cost_for_quantity
 # from .deps import get_current_user
 
 router = APIRouter(prefix="/api/products", tags=["products"])
@@ -145,3 +148,61 @@ def remove_material_from_existing_product(
         raise HTTPException(status_code=404, detail="No users found")
     remove_material_from_product(db, product_id, material_id, user)
     return {"message": "Material removed from product successfully"}
+
+
+@router.get("/{product_id}/cost-calculator")
+def calculate_cost_by_unit(
+    product_id: int,
+    quantity: float,
+    unit: str,
+    db: Session = Depends(get_db)
+):
+    """Calculate cost for specific quantity and unit"""
+    # For testing, get the first user
+    user = db.query(User).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No users found")
+
+    # Get the SQLAlchemy Product model, not the response
+    product = db.query(Product).options(
+        joinedload(Product.product_materials).joinedload(ProductMaterial.material)
+    ).filter(
+        Product.id == product_id,
+        Product.user_id == user.id,
+        Product.is_active == True
+    ).first()
+
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Get adjusted cost per gram
+    cost_per_gram = product.calcular_costo_por_gramo_ajustado()
+
+    # Calculate cost for the specified quantity and unit
+    total_cost = calculate_cost_for_quantity(cost_per_gram, quantity, unit)
+
+    # Calculate prices with margins and IVA
+    costo_total = product.calcular_costo_total()
+    precio_publico = product.precio_publico
+    precio_mayorista = product.precio_mayorista
+    precio_distribuidor = product.precio_distribuidor
+    iva_publico = product.iva_publico
+    iva_mayorista = product.iva_mayorista
+    iva_distribuidor = product.iva_distribuidor
+
+    return {
+        "product_id": product_id,
+        "quantity": quantity,
+        "unit": unit,
+        "cost_per_gram_adjusted": str(cost_per_gram),
+        "total_cost": str(total_cost),
+        "precio_publico": str(precio_publico),
+        "precio_mayorista": str(precio_mayorista),
+        "precio_distribuidor": str(precio_distribuidor),
+        "iva_publico": str(iva_publico),
+        "iva_mayorista": str(iva_mayorista),
+        "iva_distribuidor": str(iva_distribuidor),
+        "precio_publico_con_iva": str(product.precio_publico_con_iva),
+        "precio_mayorista_con_iva": str(product.precio_mayorista_con_iva),
+        "precio_distribuidor_con_iva": str(product.precio_distribuidor_con_iva)
+    }

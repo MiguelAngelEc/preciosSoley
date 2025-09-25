@@ -68,6 +68,16 @@ export interface Product {
   precio_publico_con_iva: string;
   precio_mayorista_con_iva: string;
   precio_distribuidor_con_iva: string;
+  peso_ingredientes_base?: number;
+  peso_final_producido?: number;
+  peso_empaque?: number;
+  costo_paquete: string;
+  precio_publico_paquete: string;
+  precio_mayorista_paquete: string;
+  precio_distribuidor_paquete: string;
+  precio_publico_con_iva_paquete: string;
+  precio_mayorista_con_iva_paquete: string;
+  precio_distribuidor_con_iva_paquete: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -84,6 +94,9 @@ export interface ProductCreate {
   costo_envase?: number | string;
   costo_caja?: number | string;
   costo_transporte: number | string;
+  peso_ingredientes_base?: number;
+  peso_final_producido?: number;
+  peso_empaque?: number;
   product_materials: ProductMaterialCreate[];
 }
 
@@ -98,6 +111,13 @@ export interface ProductUpdate {
   margen_publico?: number;
   margen_mayorista?: number;
   margen_distribuidor?: number;
+  costo_etiqueta?: number | string;
+  costo_envase?: number | string;
+  costo_caja?: number | string;
+  costo_transporte?: number | string;
+  peso_ingredientes_base?: number;
+  peso_final_producido?: number;
+  peso_empaque?: number;
   product_materials?: ProductMaterialCreate[];
 }
 

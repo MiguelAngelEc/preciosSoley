@@ -141,6 +141,13 @@ class ApiService {
     const response: AxiosResponse<CostosTotalesResponse> = await this.api.get('/api/products/costs/total');
     return response.data;
   }
+
+  async calculateCostByUnit(productId: number, quantity: number, unit: string): Promise<any> {
+    const response: AxiosResponse<any> = await this.api.get(`/api/products/${productId}/cost-calculator`, {
+      params: { quantity, unit }
+    });
+    return response.data;
+  }
 }
 
 // Create and export a singleton instance
