@@ -53,7 +53,10 @@ def create_product(db: Session, product: ProductCreate, user: User) -> ProductRe
         costo_etiqueta=product.costo_etiqueta,
         costo_envase=product.costo_envase,
         costo_caja=product.costo_caja,
-        costo_transporte=product.costo_transporte
+        costo_transporte=product.costo_transporte,
+        peso_ingredientes_base=product.peso_ingredientes_base,
+        peso_final_producido=product.peso_final_producido,
+        peso_empaque=product.peso_empaque
     )
     db.add(db_product)
     db.flush()  # Get the product ID
@@ -185,6 +188,15 @@ def update_product(db: Session, product_id: int, product_update: ProductUpdate, 
 
     if product_update.costo_transporte is not None:
         product.costo_transporte = product_update.costo_transporte
+
+    if product_update.peso_ingredientes_base is not None:
+        product.peso_ingredientes_base = product_update.peso_ingredientes_base
+
+    if product_update.peso_final_producido is not None:
+        product.peso_final_producido = product_update.peso_final_producido
+
+    if product_update.peso_empaque is not None:
+        product.peso_empaque = product_update.peso_empaque
 
     # Update materials if provided
     if product_update.product_materials is not None:
@@ -397,6 +409,9 @@ def _build_product_response(product: Product) -> ProductResponse:
                 material=material_response
             ))
 
+    # Calculate package prices
+    precios_empaque = product.calcular_precios_por_empaque()
+
     return ProductResponse(
         id=product.id,
         nombre=product.nombre,
@@ -418,6 +433,16 @@ def _build_product_response(product: Product) -> ProductResponse:
         precio_publico_con_iva=product.precio_publico_con_iva,
         precio_mayorista_con_iva=product.precio_mayorista_con_iva,
         precio_distribuidor_con_iva=product.precio_distribuidor_con_iva,
+        peso_ingredientes_base=product.peso_ingredientes_base,
+        peso_final_producido=product.peso_final_producido,
+        peso_empaque=product.peso_empaque,
+        costo_paquete=precios_empaque['costo_paquete'],
+        precio_publico_paquete=precios_empaque['precio_publico_paquete'],
+        precio_mayorista_paquete=precios_empaque['precio_mayorista_paquete'],
+        precio_distribuidor_paquete=precios_empaque['precio_distribuidor_paquete'],
+        precio_publico_con_iva_paquete=precios_empaque['precio_publico_con_iva_paquete'],
+        precio_mayorista_con_iva_paquete=precios_empaque['precio_mayorista_con_iva_paquete'],
+        precio_distribuidor_con_iva_paquete=precios_empaque['precio_distribuidor_con_iva_paquete'],
         is_active=product.is_active,
         created_at=product.created_at,
         updated_at=product.updated_at,
