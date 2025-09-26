@@ -31,8 +31,9 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
-import { Material, MaterialCreate } from '../types';
+import { Material, MaterialCreate, Product } from '../types';
 import ProductManager from '../components/ProductManager';
+import ProformaManager from '../components/ProformaManager';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -40,6 +41,7 @@ const Dashboard: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [tabValue, setTabValue] = useState(0);
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -55,6 +57,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchMaterials();
+    fetchProducts();
   }, []);
 
   const fetchMaterials = async () => {
@@ -67,6 +70,15 @@ const Dashboard: React.FC = () => {
       setError('Error al cargar los materiales');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const data = await apiService.getProducts();
+      setProducts(data);
+    } catch (err: any) {
+      console.error('Error fetching products:', err);
     }
   };
 
@@ -263,6 +275,7 @@ const Dashboard: React.FC = () => {
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="management tabs">
             <Tab label="Materiales" />
             <Tab label="Productos" />
+            <Tab label="Proformas" />
           </Tabs>
         </Box>
 
@@ -397,6 +410,10 @@ const Dashboard: React.FC = () => {
 
         {tabValue === 1 && (
           <ProductManager materials={materials} />
+        )}
+
+        {tabValue === 2 && (
+          <ProformaManager products={products} />
         )}
       </Container>
     </Box>

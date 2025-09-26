@@ -1,0 +1,1 @@
+'{"tipo_cliente": "publico", "cliente_nombre": "Juan Perez", "cliente_empresa": "Empresa ABC", "cliente_ruc": "1234567890001", "cliente_direccion": "Calle Principal 123", "cliente_telefono": "0991234567", "cliente_email": "juan@empresa.com", "iva_aplicado": 12, "items": [{"product_id": 8, "cantidad": 10}, {"product_id": 11, "cantidad": 5}]}' 
