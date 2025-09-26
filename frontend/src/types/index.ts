@@ -134,6 +134,58 @@ export interface CostosTotalesResponse {
   total_productos: number;
 }
 
+// Proforma Types
+export interface ProformaItem {
+  id: number;
+  proforma_id: number;
+  product_id: number;
+  cantidad: number;
+  precio_unitario: string;
+  subtotal_item: string;
+  product: Product;
+}
+
+export interface Proforma {
+  id: number;
+  numero_proforma: string;
+  tipo_cliente: 'publico' | 'mayorista' | 'distribuidor';
+  cliente_nombre: string;
+  cliente_empresa?: string;
+  cliente_ruc?: string;
+  cliente_direccion?: string;
+  cliente_telefono?: string;
+  cliente_email?: string;
+  fecha_emision: string;
+  fecha_validez: string;
+  iva_aplicado: string;
+  subtotal: string;
+  total_iva: string;
+  total_final: string;
+  proforma_items: ProformaItem[];
+}
+
+export interface ProformaCreate {
+  tipo_cliente: 'publico' | 'mayorista' | 'distribuidor';
+  cliente_nombre: string;
+  cliente_empresa?: string;
+  cliente_ruc?: string;
+  cliente_direccion?: string;
+  cliente_telefono?: string;
+  cliente_email?: string;
+  iva_aplicado: number;
+  items: ProformaItemCreate[];
+}
+
+export interface ProformaItemCreate {
+  product_id: number;
+  cantidad: number;
+}
+
+export interface ProformaListResponse {
+  proformas: Proforma[];
+  total_count: number;
+}
+
 // Auth Types
 export interface LoginCredentials {
   username: string;

@@ -13,7 +13,10 @@ import {
   ProductCreate,
   ProductUpdate,
   ProductMaterialCreate,
-  CostosTotalesResponse
+  CostosTotalesResponse,
+  Proforma,
+  ProformaCreate,
+  ProformaListResponse
 } from '../types';
 
 // API Configuration
@@ -147,6 +150,28 @@ class ApiService {
       params: { quantity, unit }
     });
     return response.data;
+  }
+
+  // Proforma methods
+  async getProformas(skip: number = 0, limit: number = 100): Promise<ProformaListResponse> {
+    const response: AxiosResponse<ProformaListResponse> = await this.api.get('/api/proformas/', {
+      params: { skip, limit }
+    });
+    return response.data;
+  }
+
+  async getProforma(id: number): Promise<Proforma> {
+    const response: AxiosResponse<Proforma> = await this.api.get(`/api/proformas/${id}`);
+    return response.data;
+  }
+
+  async createProforma(proforma: ProformaCreate): Promise<Proforma> {
+    const response: AxiosResponse<Proforma> = await this.api.post('/api/proformas/', proforma);
+    return response.data;
+  }
+
+  async deleteProforma(id: number): Promise<void> {
+    await this.api.delete(`/api/proformas/${id}`);
   }
 
   async duplicateProduct(productId: number, duplicateData: { nombre: string; peso_empaque: number }): Promise<Product> {

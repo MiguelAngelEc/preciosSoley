@@ -17,5 +17,13 @@ class User(BaseEntity):
     hashed_password = Column(String, nullable=False)
     role = Column(SQLEnum(Role), default=Role.USER)
 
+    # Company information for proformas
+    nombre_empresa = Column(String, nullable=True)
+    ruc = Column(String, nullable=True)
+    direccion = Column(String, nullable=True)
+    telefono = Column(String, nullable=True)
+    email_empresa = Column(String, nullable=True)
+
     materials = relationship("Material", back_populates="user")
     products = relationship("Product", back_populates="user")
+    proformas = relationship("Proforma", back_populates="user")
