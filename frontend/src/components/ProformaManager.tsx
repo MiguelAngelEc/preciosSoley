@@ -58,6 +58,34 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ products }) => {
   const [selectedProforma, setSelectedProforma] = useState<Proforma | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
 
+  const getPriceForClientType = (product: Product, clientType: string) => {
+    if (product.peso_empaque) {
+      // Package-based pricing
+      switch (clientType) {
+        case 'publico':
+          return parseFloat(product.precio_publico_paquete).toFixed(2);
+        case 'mayorista':
+          return parseFloat(product.precio_mayorista_paquete).toFixed(2);
+        case 'distribuidor':
+          return parseFloat(product.precio_distribuidor_paquete).toFixed(2);
+        default:
+          return parseFloat(product.precio_publico_paquete).toFixed(2);
+      }
+    } else {
+      // Standard pricing
+      switch (clientType) {
+        case 'publico':
+          return parseFloat(product.precio_publico).toFixed(2);
+        case 'mayorista':
+          return parseFloat(product.precio_mayorista).toFixed(2);
+        case 'distribuidor':
+          return parseFloat(product.precio_distribuidor).toFixed(2);
+        default:
+          return parseFloat(product.precio_publico).toFixed(2);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchProformas();
   }, []);
@@ -402,9 +430,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ products }) => {
                     <em>Seleccionar Producto</em>
                   </MenuItem>
                   {products.map((product) => {
-                    const price = product.peso_empaque
-                      ? parseFloat(product.precio_publico_paquete).toFixed(2)
-                      : parseFloat(product.precio_publico).toFixed(2);
+                    const price = getPriceForClientType(product, tipoCliente);
                     return (
                       <MenuItem key={product.id} value={product.id}>
                         {product.nombre} ({product.peso_empaque}g) - ${price}
