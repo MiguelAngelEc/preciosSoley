@@ -226,7 +226,7 @@ const Dashboard: React.FC = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Precios Soley
+            Soley Jaboneria
           </Typography>
           <Typography variant="body1" sx={{ mr: 2 }}>
             Welcome, {user?.username}
