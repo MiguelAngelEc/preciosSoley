@@ -811,266 +811,269 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       <Dialog open={!!editingProduct} onClose={() => setEditingProduct(null)} maxWidth="md" fullWidth>
         <DialogTitle>Editar Producto</DialogTitle>
         <DialogContent>
-          <TextField
-            fullWidth
-            label="Nombre del Producto"
-            value={editProductName}
-            onChange={(e) => setEditProductName(e.target.value)}
-            sx={{ mb: 2, mt: 1 }}
-          />
-
-          <TextField
-            fullWidth
-            label="Porcentaje de IVA"
-            type="number"
-            value={editProductIvaPercentage ?? ''}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              if (inputValue === '') {
-                setEditProductIvaPercentage(null);
-              } else {
-                const value = parseFloat(inputValue);
-                if (!isNaN(value) && value >= 0 && value <= 100) {
-                  setEditProductIvaPercentage(value);
-                }
-              }
-            }}
-            onBlur={(e) => {
-              const value = parseFloat(e.target.value);
-              if (isNaN(value) || value < 0 || value > 100) {
-                setEditProductIvaPercentage(21); // Default to 21% if invalid
-              }
-            }}
-            inputProps={{ min: 0, max: 100, step: 0.01 }}
-            sx={{ mb: 2 }}
-            helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
-           />
-
-           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-             Márgenes de Ganancia
-           </Typography>
-
-           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-             <TextField
-               fullWidth
-               label="Margen Público (%)"
-               type="number"
-               value={editProductMargenPublico === 0 ? '' : editProductMargenPublico}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductMargenPublico(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0 && value < 100) {
-                     setEditProductMargenPublico(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-               helperText="Margen para ventas al público"
-             />
-             <TextField
-               fullWidth
-               label="Margen Mayorista (%)"
-               type="number"
-               value={editProductMargenMayorista === 0 ? '' : editProductMargenMayorista}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductMargenMayorista(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0 && value < 100) {
-                     setEditProductMargenMayorista(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-               helperText="Margen para ventas mayoristas"
-             />
-             <TextField
-               fullWidth
-               label="Margen Distribuidor (%)"
-               type="number"
-               value={editProductMargenDistribuidor === 0 ? '' : editProductMargenDistribuidor}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductMargenDistribuidor(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0 && value < 100) {
-                     setEditProductMargenDistribuidor(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-               helperText="Margen para ventas a distribuidores"
-             />
-           </Box>
-
-           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-             Costos Adicionales
-           </Typography>
-
-           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-             <TextField
-               fullWidth
-               label="Costo Etiqueta"
-               type="number"
-               value={editProductCostoEtiqueta === 0 ? '' : editProductCostoEtiqueta}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoEtiqueta(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoEtiqueta(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de la etiqueta (opcional)"
-             />
-             <TextField
-               fullWidth
-               label="Costo Envase"
-               type="number"
-               value={editProductCostoEnvase === 0 ? '' : editProductCostoEnvase}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoEnvase(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoEnvase(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo del envase (opcional)"
-             />
-             <TextField
-               fullWidth
-               label="Costo Caja"
-               type="number"
-               value={editProductCostoCaja === 0 ? '' : editProductCostoCaja}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoCaja(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoCaja(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de la caja (opcional)"
-             />
-             <TextField
-               fullWidth
-               label="Costo Transporte"
-               type="number"
-               value={editProductCostoTransporte === 0 ? '' : editProductCostoTransporte}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setEditProductCostoTransporte(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setEditProductCostoTransporte(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de transporte (requerido)"
-               required
-             />
-           </Box>
-
-
-           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-             Peso del Empaque
-           </Typography>
-
-           <Box sx={{ mb: 2 }}>
-             <FormControl fullWidth required>
-               <Select
-                 value={editProductPesoEmpaque || ''}
-                 onChange={(e) => setEditProductPesoEmpaque(Number(e.target.value) || null)}
-                 displayEmpty
-               >
-                 <MenuItem value="">
-                   <em>Seleccionar peso del empaque</em>
-                 </MenuItem>
-                 <MenuItem value={100}>100g - Envase Pequeño</MenuItem>
-                 <MenuItem value={500}>500g - Envase Mediano</MenuItem>
-                 <MenuItem value={1000}>1000g - Envase Grande (1kg)</MenuItem>
-                 <MenuItem value={3785}>3785g - Galón</MenuItem>
-                 <MenuItem value={20000}>20000g - Caneca (20kg)</MenuItem>
-               </Select>
-             </FormControl>
-           </Box>
-
-           <Typography variant="h6" gutterBottom>
-             Materiales
-           </Typography>
-
-          {editProductMaterials.map((pm, index) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <FormControl sx={{ minWidth: 200, mr: 2 }}>
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Información Básica</Typography>
+              <TextField
+                fullWidth
+                label="Nombre del Producto"
+                value={editProductName}
+                onChange={(e) => setEditProductName(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <TextField
+                fullWidth
+                label="Porcentaje de IVA"
+                type="number"
+                value={editProductIvaPercentage ?? ''}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (inputValue === '') {
+                    setEditProductIvaPercentage(null);
+                  } else {
+                    const value = parseFloat(inputValue);
+                    if (!isNaN(value) && value >= 0 && value <= 100) {
+                      setEditProductIvaPercentage(value);
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  const value = parseFloat(e.target.value);
+                  if (isNaN(value) || value < 0 || value > 100) {
+                    setEditProductIvaPercentage(21); // Default to 21% if invalid
+                  }
+                }}
+                inputProps={{ min: 0, max: 100, step: 0.01 }}
+                helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
+              />
+            </CardContent>
+          </Card>
+  
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Márgenes de Ganancia</Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  fullWidth
+                  label="Margen Público (%)"
+                  type="number"
+                  value={editProductMargenPublico === 0 ? '' : editProductMargenPublico}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductMargenPublico(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0 && value < 100) {
+                        setEditProductMargenPublico(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+                  helperText="Margen para ventas al público"
+                />
+                <TextField
+                  fullWidth
+                  label="Margen Mayorista (%)"
+                  type="number"
+                  value={editProductMargenMayorista === 0 ? '' : editProductMargenMayorista}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductMargenMayorista(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0 && value < 100) {
+                        setEditProductMargenMayorista(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+                  helperText="Margen para ventas mayoristas"
+                />
+                <TextField
+                  fullWidth
+                  label="Margen Distribuidor (%)"
+                  type="number"
+                  value={editProductMargenDistribuidor === 0 ? '' : editProductMargenDistribuidor}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductMargenDistribuidor(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0 && value < 100) {
+                        setEditProductMargenDistribuidor(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, max: 99.99, step: 0.01 }}
+                  helperText="Margen para ventas a distribuidores"
+                />
+              </Box>
+            </CardContent>
+          </Card>
+  
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Costos Adicionales</Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  fullWidth
+                  label="Costo Etiqueta"
+                  type="number"
+                  value={editProductCostoEtiqueta === 0 ? '' : editProductCostoEtiqueta}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductCostoEtiqueta(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0) {
+                        setEditProductCostoEtiqueta(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Costo de la etiqueta (opcional)"
+                />
+                <TextField
+                  fullWidth
+                  label="Costo Envase"
+                  type="number"
+                  value={editProductCostoEnvase === 0 ? '' : editProductCostoEnvase}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductCostoEnvase(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0) {
+                        setEditProductCostoEnvase(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Costo del envase (opcional)"
+                />
+                <TextField
+                  fullWidth
+                  label="Costo Caja"
+                  type="number"
+                  value={editProductCostoCaja === 0 ? '' : editProductCostoCaja}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductCostoCaja(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0) {
+                        setEditProductCostoCaja(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Costo de la caja (opcional)"
+                />
+                <TextField
+                  fullWidth
+                  label="Costo Transporte"
+                  type="number"
+                  value={editProductCostoTransporte === 0 ? '' : editProductCostoTransporte}
+                  placeholder="0"
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (inputValue === '') {
+                      setEditProductCostoTransporte(0);
+                    } else {
+                      const value = parseFloat(inputValue);
+                      if (!isNaN(value) && value >= 0) {
+                        setEditProductCostoTransporte(value);
+                      }
+                    }
+                  }}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Costo de transporte (requerido)"
+                  required
+                />
+              </Box>
+            </CardContent>
+          </Card>
+  
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Información del Empaque</Typography>
+              <FormControl fullWidth required>
                 <Select
-                  value={pm.material_id || ''}
-                  onChange={(e) => updateEditProductMaterial(index, 'material_id', Number(e.target.value))}
+                  value={editProductPesoEmpaque || ''}
+                  onChange={(e) => setEditProductPesoEmpaque(Number(e.target.value) || null)}
                   displayEmpty
                 >
                   <MenuItem value="">
-                    <em>Seleccionar Material</em>
+                    <em>Seleccionar peso del empaque</em>
                   </MenuItem>
-                  {materials.map((material) => (
-                    <MenuItem key={material.id} value={material.id}>
-                      {material.nombre}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value={100}>100g - Envase Pequeño</MenuItem>
+                  <MenuItem value={500}>500g - Envase Mediano</MenuItem>
+                  <MenuItem value={1000}>1000g - Envase Grande (1kg)</MenuItem>
+                  <MenuItem value={3785}>3785g - Galón</MenuItem>
+                  <MenuItem value={20000}>20000g - Caneca (20kg)</MenuItem>
                 </Select>
               </FormControl>
-
-              <TextField
-                label="Cantidad (g/ml)"
-                type="number"
-                value={pm.cantidad === '0' ? '' : pm.cantidad}
-                placeholder="0"
-                onChange={(e) => updateEditProductMaterial(index, 'cantidad', e.target.value || '0')}
-                inputProps={{ min: 0, step: 0.01 }}
-                sx={{ mr: 2, width: 150 }}
-              />
-
-              <Typography sx={{ mr: 2 }}>
-                Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(2) : '0.00'}
-              </Typography>
-
-              <IconButton onClick={() => removeEditProductMaterial(index)} color="error">
-                <Remove />
-              </IconButton>
-            </Box>
-          ))}
-
-          <Button onClick={addMaterialToEditProduct} startIcon={<Add />} variant="outlined">
-            Agregar Material
-          </Button>
+            </CardContent>
+          </Card>
+  
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Materiales</Typography>
+              {editProductMaterials.map((pm, index) => (
+                <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <FormControl sx={{ minWidth: 200, mr: 2 }}>
+                    <Select
+                      value={pm.material_id || ''}
+                      onChange={(e) => updateEditProductMaterial(index, 'material_id', Number(e.target.value))}
+                      displayEmpty
+                    >
+                      <MenuItem value="">
+                        <em>Seleccionar Material</em>
+                      </MenuItem>
+                      {materials.map((material) => (
+                        <MenuItem key={material.id} value={material.id}>
+                          {material.nombre}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+  
+                  <TextField
+                    label="Cantidad (g/ml)"
+                    type="number"
+                    value={pm.cantidad === '0' ? '' : pm.cantidad}
+                    placeholder="0"
+                    onChange={(e) => updateEditProductMaterial(index, 'cantidad', e.target.value || '0')}
+                    inputProps={{ min: 0, step: 0.01 }}
+                    sx={{ mr: 2, width: 150 }}
+                  />
+  
+                  <Typography sx={{ mr: 2 }}>
+                    Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(2) : '0.00'}
+                  </Typography>
+  
+                  <IconButton onClick={() => removeEditProductMaterial(index)} color="error">
+                    <Remove />
+                  </IconButton>
+                </Box>
+              ))}
+              <Button onClick={addMaterialToEditProduct} startIcon={<Add />} variant="outlined">
+                Agregar Material
+              </Button>
+            </CardContent>
+          </Card>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setEditingProduct(null)}>Cancelar</Button>
