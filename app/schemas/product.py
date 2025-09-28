@@ -133,6 +133,7 @@ class ProductResponse(BaseModel):
     precio_publico_con_iva_paquete: Decimal
     precio_mayorista_con_iva_paquete: Decimal
     precio_distribuidor_con_iva_paquete: Decimal
+    costo_por_gramo: Decimal
     is_active: bool
     created_at: datetime
     updated_at: datetime

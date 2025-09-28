@@ -501,6 +501,7 @@ def _build_product_response(product: Product) -> ProductResponse:
         precio_publico_con_iva_paquete=precios_empaque['precio_publico_con_iva_paquete'],
         precio_mayorista_con_iva_paquete=precios_empaque['precio_mayorista_con_iva_paquete'],
         precio_distribuidor_con_iva_paquete=precios_empaque['precio_distribuidor_con_iva_paquete'],
+        costo_por_gramo=product.calcular_costo_por_gramo_ajustado(),
         is_active=product.is_active,
         created_at=product.created_at,
         updated_at=product.updated_at,

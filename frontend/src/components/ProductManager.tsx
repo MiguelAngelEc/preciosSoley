@@ -1164,7 +1164,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   </Box>
                   <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
                     <Typography variant="h6" align="right">
-                      Costo Total: ${parseFloat(detailProduct.costo_total).toFixed(2)}
+                      Costo Total: ${detailProduct.product_materials.reduce((sum, pm) => sum + parseFloat(pm.costo), 0).toFixed(2)}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -1174,34 +1174,71 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Resumen de Costos
+                    Desglose de Costos por Paquete
                   </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Costo Total de Materiales
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body1">
+                        Costo Materiales por Paquete:
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                        ${parseFloat(detailProduct.costo_total).toFixed(2)}
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        ${(parseFloat(detailProduct.costo_paquete) - (parseFloat(detailProduct.costo_etiqueta) + parseFloat(detailProduct.costo_envase) + parseFloat(detailProduct.costo_caja) + parseFloat(detailProduct.costo_transporte))).toFixed(2)}
                       </Typography>
                     </Box>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Peso del Empaque
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body1">
+                        Costo Etiqueta:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        ${parseFloat(detailProduct.costo_etiqueta).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body1">
+                        Costo Envase:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        ${parseFloat(detailProduct.costo_envase).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body1">
+                        Costo Caja:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        ${parseFloat(detailProduct.costo_caja).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body1">
+                        Costo Transporte:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        ${parseFloat(detailProduct.costo_transporte).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pt: 1, borderTop: '1px solid', borderColor: 'divider' }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        Costo Base por Paquete:
                       </Typography>
                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        ${parseFloat(detailProduct.costo_paquete).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Peso del Empaque:
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
                         {detailProduct.peso_empaque || 0}g
                       </Typography>
                     </Box>
-                    <Box sx={{ textAlign: 'center' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <Typography variant="body2" color="text.secondary">
-                        Costo por Gramo
+                        Costo Total de Producción:
                       </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                        {detailProduct.peso_empaque ?
-                          `$${(parseFloat(detailProduct.costo_total) / detailProduct.peso_empaque!).toFixed(4)}` :
-                          'N/A'
-                        }
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'medium' }}>
+                        ${parseFloat(detailProduct.costo_total).toFixed(2)}
                       </Typography>
                     </Box>
                   </Box>

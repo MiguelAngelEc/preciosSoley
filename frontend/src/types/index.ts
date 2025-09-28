@@ -78,6 +78,7 @@ export interface Product {
   precio_publico_con_iva_paquete: string;
   precio_mayorista_con_iva_paquete: string;
   precio_distribuidor_con_iva_paquete: string;
+  costo_por_gramo: string;
   is_active: boolean;
   created_at: string;
   updated_at: string;
