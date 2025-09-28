@@ -388,7 +388,7 @@ const Dashboard: React.FC = () => {
                       <>
                         <TableCell>{material.nombre}</TableCell>
                         <TableCell align="right">${parseFloat(material.precio_base).toFixed(2)}</TableCell>
-                        <TableCell align="right">${parseFloat(material.precio_unidad_pequena).toFixed(6)}</TableCell>
+                        <TableCell align="right">${Number(parseFloat(material.precio_unidad_pequena).toFixed(6))}</TableCell>
                         <TableCell align="center">
                           <IconButton onClick={() => handleEdit(material)} color="primary" size="small">
                             <Edit />

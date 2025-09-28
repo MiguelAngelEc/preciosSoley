@@ -29,7 +29,7 @@ import {
   PictureAsPdf
 } from '@mui/icons-material';
 import apiService from '../services/api';
-import { Proforma, ProformaCreate, ProformaItemCreate, Product } from '../types';
+import { Proforma, ProformaCreate, Product } from '../types';
 import ProformaDetailModal from './ProformaDetailModal';
 
 interface ProformaManagerProps {

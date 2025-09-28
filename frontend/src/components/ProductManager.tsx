@@ -54,10 +54,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [newProductMargenPublico, setNewProductMargenPublico] = useState<number>(0);
   const [newProductMargenMayorista, setNewProductMargenMayorista] = useState<number>(0);
   const [newProductMargenDistribuidor, setNewProductMargenDistribuidor] = useState<number>(0);
-  const [newProductCostoEtiqueta, setNewProductCostoEtiqueta] = useState<number>(0);
-  const [newProductCostoEnvase, setNewProductCostoEnvase] = useState<number>(0);
-  const [newProductCostoCaja, setNewProductCostoCaja] = useState<number>(0);
-  const [newProductCostoTransporte, setNewProductCostoTransporte] = useState<number>(0);
+  const [newProductCostoEtiqueta, setNewProductCostoEtiqueta] = useState<string>('0');
+  const [newProductCostoEnvase, setNewProductCostoEnvase] = useState<string>('0');
+  const [newProductCostoCaja, setNewProductCostoCaja] = useState<string>('0');
+  const [newProductCostoTransporte, setNewProductCostoTransporte] = useState<string>('0');
   const [newProductPesoEmpaque, setNewProductPesoEmpaque] = useState<number | null>(null);
   const [newProductMaterials, setNewProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
@@ -68,10 +68,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [editProductMargenPublico, setEditProductMargenPublico] = useState<number>(0);
   const [editProductMargenMayorista, setEditProductMargenMayorista] = useState<number>(0);
   const [editProductMargenDistribuidor, setEditProductMargenDistribuidor] = useState<number>(0);
-  const [editProductCostoEtiqueta, setEditProductCostoEtiqueta] = useState<number>(0);
-  const [editProductCostoEnvase, setEditProductCostoEnvase] = useState<number>(0);
-  const [editProductCostoCaja, setEditProductCostoCaja] = useState<number>(0);
-  const [editProductCostoTransporte, setEditProductCostoTransporte] = useState<number>(0);
+  const [editProductCostoEtiqueta, setEditProductCostoEtiqueta] = useState<string>('0');
+  const [editProductCostoEnvase, setEditProductCostoEnvase] = useState<string>('0');
+  const [editProductCostoCaja, setEditProductCostoCaja] = useState<string>('0');
+  const [editProductCostoTransporte, setEditProductCostoTransporte] = useState<string>('0');
   const [editProductPesoEmpaque, setEditProductPesoEmpaque] = useState<number | null>(null);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
@@ -167,10 +167,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         margen_publico: newProductMargenPublico,
         margen_mayorista: newProductMargenMayorista,
         margen_distribuidor: newProductMargenDistribuidor,
-        costo_etiqueta: newProductCostoEtiqueta,
-        costo_envase: newProductCostoEnvase,
-        costo_caja: newProductCostoCaja,
-        costo_transporte: newProductCostoTransporte,
+        costo_etiqueta: parseFloat(newProductCostoEtiqueta) || 0,
+        costo_envase: parseFloat(newProductCostoEnvase) || 0,
+        costo_caja: parseFloat(newProductCostoCaja) || 0,
+        costo_transporte: parseFloat(newProductCostoTransporte) || 0,
         peso_empaque: newProductPesoEmpaque ?? undefined,
         product_materials: newProductMaterials
       };
@@ -182,10 +182,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setNewProductMargenPublico(0);
       setNewProductMargenMayorista(0);
       setNewProductMargenDistribuidor(0);
-      setNewProductCostoEtiqueta(0);
-      setNewProductCostoEnvase(0);
-      setNewProductCostoCaja(0);
-      setNewProductCostoTransporte(0);
+      setNewProductCostoEtiqueta('0');
+      setNewProductCostoEnvase('0');
+      setNewProductCostoCaja('0');
+      setNewProductCostoTransporte('0');
       setNewProductPesoEmpaque(null);
       setNewProductMaterials([]);
       setError(null);
@@ -206,10 +206,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     setEditProductMargenPublico(product.margen_publico);
     setEditProductMargenMayorista(product.margen_mayorista);
     setEditProductMargenDistribuidor(product.margen_distribuidor);
-    setEditProductCostoEtiqueta(parseFloat(product.costo_etiqueta));
-    setEditProductCostoEnvase(parseFloat(product.costo_envase));
-    setEditProductCostoCaja(parseFloat(product.costo_caja));
-    setEditProductCostoTransporte(parseFloat(product.costo_transporte));
+    setEditProductCostoEtiqueta(product.costo_etiqueta.toString());
+    setEditProductCostoEnvase(product.costo_envase.toString());
+    setEditProductCostoCaja(product.costo_caja.toString());
+    setEditProductCostoTransporte(product.costo_transporte.toString());
     setEditProductPesoEmpaque(product.peso_empaque ?? null);
     setEditProductMaterials(
       product.product_materials.map(pm => ({
@@ -259,10 +259,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         margen_publico: editProductMargenPublico,
         margen_mayorista: editProductMargenMayorista,
         margen_distribuidor: editProductMargenDistribuidor,
-        costo_etiqueta: editProductCostoEtiqueta,
-        costo_envase: editProductCostoEnvase,
-        costo_caja: editProductCostoCaja,
-        costo_transporte: editProductCostoTransporte,
+        costo_etiqueta: parseFloat(editProductCostoEtiqueta) || 0,
+        costo_envase: parseFloat(editProductCostoEnvase) || 0,
+        costo_caja: parseFloat(editProductCostoCaja) || 0,
+        costo_transporte: parseFloat(editProductCostoTransporte) || 0,
         peso_empaque: editProductPesoEmpaque ?? undefined,
         product_materials: editProductMaterials
       };
@@ -274,10 +274,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setEditProductMargenPublico(0);
       setEditProductMargenMayorista(0);
       setEditProductMargenDistribuidor(0);
-      setEditProductCostoEtiqueta(0);
-      setEditProductCostoEnvase(0);
-      setEditProductCostoCaja(0);
-      setEditProductCostoTransporte(0);
+      setEditProductCostoEtiqueta('0');
+      setEditProductCostoEnvase('0');
+      setEditProductCostoCaja('0');
+      setEditProductCostoTransporte('0');
       setEditProductPesoEmpaque(null);
       setEditProductMaterials([]);
       setError(null);
@@ -649,19 +649,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Costo Etiqueta"
                type="number"
-               value={newProductCostoEtiqueta === 0 ? '' : newProductCostoEtiqueta}
+               value={newProductCostoEtiqueta === '0' ? '' : newProductCostoEtiqueta}
                placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductCostoEtiqueta(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setNewProductCostoEtiqueta(value);
-                   }
-                 }
-               }}
+               onChange={(e) => setNewProductCostoEtiqueta(e.target.value || '0')}
                inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de la etiqueta (opcional)"
              />
@@ -669,19 +659,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Costo Envase"
                type="number"
-               value={newProductCostoEnvase === 0 ? '' : newProductCostoEnvase}
+               value={newProductCostoEnvase === '0' ? '' : newProductCostoEnvase}
                placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductCostoEnvase(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setNewProductCostoEnvase(value);
-                   }
-                 }
-               }}
+               onChange={(e) => setNewProductCostoEnvase(e.target.value || '0')}
                inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo del envase (opcional)"
              />
@@ -689,19 +669,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Costo Caja"
                type="number"
-               value={newProductCostoCaja === 0 ? '' : newProductCostoCaja}
+               value={newProductCostoCaja === '0' ? '' : newProductCostoCaja}
                placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductCostoCaja(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setNewProductCostoCaja(value);
-                   }
-                 }
-               }}
+               onChange={(e) => setNewProductCostoCaja(e.target.value || '0')}
                inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de la caja (opcional)"
              />
@@ -709,19 +679,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                fullWidth
                label="Costo Transporte"
                type="number"
-               value={newProductCostoTransporte === 0 ? '' : newProductCostoTransporte}
+               value={newProductCostoTransporte === '0' ? '' : newProductCostoTransporte}
                placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductCostoTransporte(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0) {
-                     setNewProductCostoTransporte(value);
-                   }
-                 }
-               }}
+               onChange={(e) => setNewProductCostoTransporte(e.target.value || '0')}
                inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de transporte (requerido)"
                required
@@ -925,19 +885,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   fullWidth
                   label="Costo Etiqueta"
                   type="number"
-                  value={editProductCostoEtiqueta === 0 ? '' : editProductCostoEtiqueta}
+                  value={editProductCostoEtiqueta === '0' ? '' : editProductCostoEtiqueta}
                   placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductCostoEtiqueta(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0) {
-                        setEditProductCostoEtiqueta(value);
-                      }
-                    }
-                  }}
+                  onChange={(e) => setEditProductCostoEtiqueta(e.target.value || '0')}
                   inputProps={{ min: 0, step: 0.01 }}
                   helperText="Costo de la etiqueta (opcional)"
                 />
@@ -945,19 +895,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   fullWidth
                   label="Costo Envase"
                   type="number"
-                  value={editProductCostoEnvase === 0 ? '' : editProductCostoEnvase}
+                  value={editProductCostoEnvase === '0' ? '' : editProductCostoEnvase}
                   placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductCostoEnvase(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0) {
-                        setEditProductCostoEnvase(value);
-                      }
-                    }
-                  }}
+                  onChange={(e) => setEditProductCostoEnvase(e.target.value || '0')}
                   inputProps={{ min: 0, step: 0.01 }}
                   helperText="Costo del envase (opcional)"
                 />
@@ -965,19 +905,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   fullWidth
                   label="Costo Caja"
                   type="number"
-                  value={editProductCostoCaja === 0 ? '' : editProductCostoCaja}
+                  value={editProductCostoCaja === '0' ? '' : editProductCostoCaja}
                   placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductCostoCaja(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0) {
-                        setEditProductCostoCaja(value);
-                      }
-                    }
-                  }}
+                  onChange={(e) => setEditProductCostoCaja(e.target.value || '0')}
                   inputProps={{ min: 0, step: 0.01 }}
                   helperText="Costo de la caja (opcional)"
                 />
@@ -985,19 +915,9 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   fullWidth
                   label="Costo Transporte"
                   type="number"
-                  value={editProductCostoTransporte === 0 ? '' : editProductCostoTransporte}
+                  value={editProductCostoTransporte === '0' ? '' : editProductCostoTransporte}
                   placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductCostoTransporte(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0) {
-                        setEditProductCostoTransporte(value);
-                      }
-                    }
-                  }}
+                  onChange={(e) => setEditProductCostoTransporte(e.target.value || '0')}
                   inputProps={{ min: 0, step: 0.01 }}
                   helperText="Costo de transporte (requerido)"
                   required
