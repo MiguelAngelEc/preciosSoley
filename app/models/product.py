@@ -21,6 +21,13 @@ class Product(BaseEntity):
     costo_envase = Column(Numeric(10, 2), nullable=True, default=0.0)  # Packaging cost
     costo_caja = Column(Numeric(10, 2), nullable=True, default=0.0)  # Box/container cost
     costo_transporte = Column(Numeric(10, 2), nullable=False)  # Transportation cost
+    costo_mano_obra = Column(Numeric(10, 2), nullable=True, default=0.0)  # Direct labor cost per package
+    costo_energia = Column(Numeric(10, 2), nullable=True, default=0.0)  # Energy costs (electricity, water, gas)
+    costo_depreciacion = Column(Numeric(10, 2), nullable=True, default=0.0)  # Equipment depreciation
+    costo_mantenimiento = Column(Numeric(10, 2), nullable=True, default=0.0)  # Equipment maintenance
+    costo_administrativo = Column(Numeric(10, 2), nullable=True, default=0.0)  # Administrative overhead per unit
+    costo_comercializacion = Column(Numeric(10, 2), nullable=True, default=0.0)  # Marketing and sales costs
+    costo_financiero = Column(Numeric(10, 2), nullable=True, default=0.0)  # Financial costs (interest, loans)
     peso_ingredientes_base = Column(Numeric(10, 2), nullable=True, comment="Total weight of base ingredients")
     peso_final_producido = Column(Numeric(10, 2), nullable=True, comment="Final production weight/volume")
     peso_empaque = Column(Numeric(10, 2), nullable=True, comment="Selected package weight in grams")
@@ -115,6 +122,13 @@ class Product(BaseEntity):
         total += self.costo_envase or Decimal('0')
         total += self.costo_caja or Decimal('0')
         total += self.costo_transporte
+        total += self.costo_mano_obra or Decimal('0')
+        total += self.costo_energia or Decimal('0')
+        total += self.costo_depreciacion or Decimal('0')
+        total += self.costo_mantenimiento or Decimal('0')
+        total += self.costo_administrativo or Decimal('0')
+        total += self.costo_comercializacion or Decimal('0')
+        total += self.costo_financiero or Decimal('0')
         return total
 
     def calcular_precios_por_empaque(self) -> dict:

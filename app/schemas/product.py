@@ -56,6 +56,13 @@ class ProductBase(BaseModel):
     costo_envase: Optional[Decimal] = 0.0
     costo_caja: Optional[Decimal] = 0.0
     costo_transporte: Decimal
+    costo_mano_obra: Optional[Decimal] = 0.0
+    costo_energia: Optional[Decimal] = 0.0
+    costo_depreciacion: Optional[Decimal] = 0.0
+    costo_mantenimiento: Optional[Decimal] = 0.0
+    costo_administrativo: Optional[Decimal] = 0.0
+    costo_comercializacion: Optional[Decimal] = 0.0
+    costo_financiero: Optional[Decimal] = 0.0
     peso_ingredientes_base: Optional[float] = None
     peso_final_producido: Optional[float] = None
     peso_empaque: Optional[float] = None
@@ -96,6 +103,13 @@ class ProductUpdate(BaseModel):
     costo_envase: Optional[Decimal] = None
     costo_caja: Optional[Decimal] = None
     costo_transporte: Optional[Decimal] = None
+    costo_mano_obra: Optional[Decimal] = None
+    costo_energia: Optional[Decimal] = None
+    costo_depreciacion: Optional[Decimal] = None
+    costo_mantenimiento: Optional[Decimal] = None
+    costo_administrativo: Optional[Decimal] = None
+    costo_comercializacion: Optional[Decimal] = None
+    costo_financiero: Optional[Decimal] = None
     peso_ingredientes_base: Optional[float] = None
     peso_final_producido: Optional[float] = None
     peso_empaque: Optional[float] = None
@@ -110,6 +124,13 @@ class ProductResponse(BaseModel):
     costo_envase: Decimal
     costo_caja: Decimal
     costo_transporte: Decimal
+    costo_mano_obra: Decimal
+    costo_energia: Decimal
+    costo_depreciacion: Decimal
+    costo_mantenimiento: Decimal
+    costo_administrativo: Decimal
+    costo_comercializacion: Decimal
+    costo_financiero: Decimal
     iva_percentage: float
     iva_publico: Decimal
     iva_mayorista: Decimal
