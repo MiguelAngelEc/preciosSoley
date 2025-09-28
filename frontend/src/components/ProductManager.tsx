@@ -58,6 +58,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [newProductCostoEnvase, setNewProductCostoEnvase] = useState<string>('0');
   const [newProductCostoCaja, setNewProductCostoCaja] = useState<string>('0');
   const [newProductCostoTransporte, setNewProductCostoTransporte] = useState<string>('0');
+  const [newProductCostoManoObra, setNewProductCostoManoObra] = useState<string>('0');
+  const [newProductCostoEnergia, setNewProductCostoEnergia] = useState<string>('0');
+  const [newProductCostoDepreciacion, setNewProductCostoDepreciacion] = useState<string>('0');
+  const [newProductCostoMantenimiento, setNewProductCostoMantenimiento] = useState<string>('0');
+  const [newProductCostoAdministrativo, setNewProductCostoAdministrativo] = useState<string>('0');
+  const [newProductCostoComercializacion, setNewProductCostoComercializacion] = useState<string>('0');
+  const [newProductCostoFinanciero, setNewProductCostoFinanciero] = useState<string>('0');
   const [newProductPesoEmpaque, setNewProductPesoEmpaque] = useState<number | null>(null);
   const [newProductMaterials, setNewProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
@@ -72,6 +79,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   const [editProductCostoEnvase, setEditProductCostoEnvase] = useState<string>('0');
   const [editProductCostoCaja, setEditProductCostoCaja] = useState<string>('0');
   const [editProductCostoTransporte, setEditProductCostoTransporte] = useState<string>('0');
+  const [editProductCostoManoObra, setEditProductCostoManoObra] = useState<string>('0');
+  const [editProductCostoEnergia, setEditProductCostoEnergia] = useState<string>('0');
+  const [editProductCostoDepreciacion, setEditProductCostoDepreciacion] = useState<string>('0');
+  const [editProductCostoMantenimiento, setEditProductCostoMantenimiento] = useState<string>('0');
+  const [editProductCostoAdministrativo, setEditProductCostoAdministrativo] = useState<string>('0');
+  const [editProductCostoComercializacion, setEditProductCostoComercializacion] = useState<string>('0');
+  const [editProductCostoFinanciero, setEditProductCostoFinanciero] = useState<string>('0');
   const [editProductPesoEmpaque, setEditProductPesoEmpaque] = useState<number | null>(null);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
@@ -171,6 +185,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         costo_envase: parseFloat(newProductCostoEnvase) || 0,
         costo_caja: parseFloat(newProductCostoCaja) || 0,
         costo_transporte: parseFloat(newProductCostoTransporte) || 0,
+        costo_mano_obra: parseFloat(newProductCostoManoObra) || 0,
+        costo_energia: parseFloat(newProductCostoEnergia) || 0,
+        costo_depreciacion: parseFloat(newProductCostoDepreciacion) || 0,
+        costo_mantenimiento: parseFloat(newProductCostoMantenimiento) || 0,
+        costo_administrativo: parseFloat(newProductCostoAdministrativo) || 0,
+        costo_comercializacion: parseFloat(newProductCostoComercializacion) || 0,
+        costo_financiero: parseFloat(newProductCostoFinanciero) || 0,
         peso_empaque: newProductPesoEmpaque ?? undefined,
         product_materials: newProductMaterials
       };
@@ -186,6 +207,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setNewProductCostoEnvase('0');
       setNewProductCostoCaja('0');
       setNewProductCostoTransporte('0');
+      setNewProductCostoManoObra('0');
+      setNewProductCostoEnergia('0');
+      setNewProductCostoDepreciacion('0');
+      setNewProductCostoMantenimiento('0');
+      setNewProductCostoAdministrativo('0');
+      setNewProductCostoComercializacion('0');
+      setNewProductCostoFinanciero('0');
       setNewProductPesoEmpaque(null);
       setNewProductMaterials([]);
       setError(null);
@@ -210,6 +238,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
     setEditProductCostoEnvase(product.costo_envase.toString());
     setEditProductCostoCaja(product.costo_caja.toString());
     setEditProductCostoTransporte(product.costo_transporte.toString());
+    setEditProductCostoManoObra(product.costo_mano_obra.toString());
+    setEditProductCostoEnergia(product.costo_energia.toString());
+    setEditProductCostoDepreciacion(product.costo_depreciacion.toString());
+    setEditProductCostoMantenimiento(product.costo_mantenimiento.toString());
+    setEditProductCostoAdministrativo(product.costo_administrativo.toString());
+    setEditProductCostoComercializacion(product.costo_comercializacion.toString());
+    setEditProductCostoFinanciero(product.costo_financiero.toString());
     setEditProductPesoEmpaque(product.peso_empaque ?? null);
     setEditProductMaterials(
       product.product_materials.map(pm => ({
@@ -263,6 +298,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
         costo_envase: parseFloat(editProductCostoEnvase) || 0,
         costo_caja: parseFloat(editProductCostoCaja) || 0,
         costo_transporte: parseFloat(editProductCostoTransporte) || 0,
+        costo_mano_obra: parseFloat(editProductCostoManoObra) || 0,
+        costo_energia: parseFloat(editProductCostoEnergia) || 0,
+        costo_depreciacion: parseFloat(editProductCostoDepreciacion) || 0,
+        costo_mantenimiento: parseFloat(editProductCostoMantenimiento) || 0,
+        costo_administrativo: parseFloat(editProductCostoAdministrativo) || 0,
+        costo_comercializacion: parseFloat(editProductCostoComercializacion) || 0,
+        costo_financiero: parseFloat(editProductCostoFinanciero) || 0,
         peso_empaque: editProductPesoEmpaque ?? undefined,
         product_materials: editProductMaterials
       };
@@ -278,6 +320,13 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setEditProductCostoEnvase('0');
       setEditProductCostoCaja('0');
       setEditProductCostoTransporte('0');
+      setEditProductCostoManoObra('0');
+      setEditProductCostoEnergia('0');
+      setEditProductCostoDepreciacion('0');
+      setEditProductCostoMantenimiento('0');
+      setEditProductCostoAdministrativo('0');
+      setEditProductCostoComercializacion('0');
+      setEditProductCostoFinanciero('0');
       setEditProductPesoEmpaque(null);
       setEditProductMaterials([]);
       setError(null);
@@ -641,7 +690,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
            </Box>
 
            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
-             Costos Adicionales
+             Costos de Empaque
+           </Typography>
+           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+             Costos asociados al empaquetado del producto
            </Typography>
 
            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
@@ -685,6 +737,96 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                inputProps={{ min: 0, step: 0.01 }}
                helperText="Costo de transporte (requerido)"
                required
+             />
+           </Box>
+
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Costos de Producción
+           </Typography>
+           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+             Costos directos del proceso de fabricación
+           </Typography>
+
+           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+             <TextField
+               fullWidth
+               label="Mano de Obra Directa"
+               type="number"
+               value={newProductCostoManoObra === '0' ? '' : newProductCostoManoObra}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoManoObra(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Costo de personal por unidad producida"
+             />
+             <TextField
+               fullWidth
+               label="Energía y Servicios"
+               type="number"
+               value={newProductCostoEnergia === '0' ? '' : newProductCostoEnergia}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoEnergia(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Electricidad, agua, gas por unidad"
+             />
+             <TextField
+               fullWidth
+               label="Depreciación de Equipos"
+               type="number"
+               value={newProductCostoDepreciacion === '0' ? '' : newProductCostoDepreciacion}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoDepreciacion(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Desgaste de maquinaria por unidad"
+             />
+             <TextField
+               fullWidth
+               label="Mantenimiento"
+               type="number"
+               value={newProductCostoMantenimiento === '0' ? '' : newProductCostoMantenimiento}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoMantenimiento(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Mantenimiento de equipos por unidad"
+             />
+           </Box>
+
+           <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+             Gastos Operacionales
+           </Typography>
+           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+             Gastos administrativos y comerciales
+           </Typography>
+
+           <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+             <TextField
+               fullWidth
+               label="Gastos Administrativos"
+               type="number"
+               value={newProductCostoAdministrativo === '0' ? '' : newProductCostoAdministrativo}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoAdministrativo(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Oficina, personal administrativo por unidad"
+             />
+             <TextField
+               fullWidth
+               label="Comercialización"
+               type="number"
+               value={newProductCostoComercializacion === '0' ? '' : newProductCostoComercializacion}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoComercializacion(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Marketing, ventas, distribución por unidad"
+             />
+             <TextField
+               fullWidth
+               label="Costos Financieros"
+               type="number"
+               value={newProductCostoFinanciero === '0' ? '' : newProductCostoFinanciero}
+               placeholder="0"
+               onChange={(e) => setNewProductCostoFinanciero(e.target.value || '0')}
+               inputProps={{ min: 0, step: 0.01 }}
+               helperText="Intereses, préstamos por unidad (opcional)"
              />
            </Box>
 
@@ -879,7 +1021,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
   
           <Card sx={{ mb: 3 }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>Costos Adicionales</Typography>
+              <Typography variant="h6" gutterBottom>Costos de Empaque</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Costos asociados al empaquetado del producto
+              </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                   fullWidth
@@ -921,6 +1066,98 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   inputProps={{ min: 0, step: 0.01 }}
                   helperText="Costo de transporte (requerido)"
                   required
+                />
+              </Box>
+            </CardContent>
+          </Card>
+
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Costos de Producción</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Costos directos del proceso de fabricación
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  fullWidth
+                  label="Mano de Obra Directa"
+                  type="number"
+                  value={editProductCostoManoObra === '0' ? '' : editProductCostoManoObra}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoManoObra(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Costo de personal por unidad producida"
+                />
+                <TextField
+                  fullWidth
+                  label="Energía y Servicios"
+                  type="number"
+                  value={editProductCostoEnergia === '0' ? '' : editProductCostoEnergia}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoEnergia(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Electricidad, agua, gas por unidad"
+                />
+                <TextField
+                  fullWidth
+                  label="Depreciación de Equipos"
+                  type="number"
+                  value={editProductCostoDepreciacion === '0' ? '' : editProductCostoDepreciacion}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoDepreciacion(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Desgaste de maquinaria por unidad"
+                />
+                <TextField
+                  fullWidth
+                  label="Mantenimiento"
+                  type="number"
+                  value={editProductCostoMantenimiento === '0' ? '' : editProductCostoMantenimiento}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoMantenimiento(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Mantenimiento de equipos por unidad"
+                />
+              </Box>
+            </CardContent>
+          </Card>
+
+          <Card sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>Gastos Operacionales</Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Gastos administrativos y comerciales
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <TextField
+                  fullWidth
+                  label="Gastos Administrativos"
+                  type="number"
+                  value={editProductCostoAdministrativo === '0' ? '' : editProductCostoAdministrativo}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoAdministrativo(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Oficina, personal administrativo por unidad"
+                />
+                <TextField
+                  fullWidth
+                  label="Comercialización"
+                  type="number"
+                  value={editProductCostoComercializacion === '0' ? '' : editProductCostoComercializacion}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoComercializacion(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Marketing, ventas, distribución por unidad"
+                />
+                <TextField
+                  fullWidth
+                  label="Costos Financieros"
+                  type="number"
+                  value={editProductCostoFinanciero === '0' ? '' : editProductCostoFinanciero}
+                  placeholder="0"
+                  onChange={(e) => setEditProductCostoFinanciero(e.target.value || '0')}
+                  inputProps={{ min: 0, step: 0.01 }}
+                  helperText="Intereses, préstamos por unidad (opcional)"
                 />
               </Box>
             </CardContent>
@@ -1164,7 +1401,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
                   </Box>
                   <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
                     <Typography variant="h6" align="right">
-                      Costo Total: ${parseFloat(detailProduct.costo_total).toFixed(2)}
+                      Costo Total: ${detailProduct.product_materials.reduce((sum, pm) => sum + parseFloat(pm.costo), 0).toFixed(2)}
                     </Typography>
                   </Box>
                 </CardContent>
@@ -1174,34 +1411,98 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
               <Card>
                 <CardContent>
                   <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    Resumen de Costos
+                    Desglose de Costos por Paquete
                   </Typography>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', gap: 2 }}>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Costo Total de Materiales
+
+                  {/* Packaging Costs */}
+                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                    Costos de Empaque
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Costo Etiqueta:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_etiqueta).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Costo Envase:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_envase).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Costo Caja:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_caja).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Costo Transporte:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_transporte).toFixed(2)}</Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Production Costs */}
+                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                    Costos de Producción
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Mano de Obra Directa:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_mano_obra).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Energía y Servicios:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_energia).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Depreciación de Equipos:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_depreciacion).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Mantenimiento:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_mantenimiento).toFixed(2)}</Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Operational Costs */}
+                  <Typography variant="subtitle1" sx={{ mt: 2, mb: 1, fontWeight: 'bold', color: 'primary.main' }}>
+                    Gastos Operacionales
+                  </Typography>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Gastos Administrativos:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_administrativo).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Comercialización:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_comercializacion).toFixed(2)}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2">Costos Financieros:</Typography>
+                      <Typography variant="body2">${parseFloat(detailProduct.costo_financiero).toFixed(2)}</Typography>
+                    </Box>
+                  </Box>
+
+                  {/* Summary */}
+                  <Box sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        Costo Materiales por Paquete:
+                      </Typography>
+                      <Typography variant="body1" sx={{ fontWeight: 'medium' }}>
+                        ${(parseFloat(detailProduct.costo_paquete) - (parseFloat(detailProduct.costo_etiqueta) + parseFloat(detailProduct.costo_envase) + parseFloat(detailProduct.costo_caja) + parseFloat(detailProduct.costo_transporte) + parseFloat(detailProduct.costo_mano_obra) + parseFloat(detailProduct.costo_energia) + parseFloat(detailProduct.costo_depreciacion) + parseFloat(detailProduct.costo_mantenimiento) + parseFloat(detailProduct.costo_administrativo) + parseFloat(detailProduct.costo_comercializacion) + parseFloat(detailProduct.costo_financiero))).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        Costo Base por Paquete:
                       </Typography>
                       <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        ${parseFloat(detailProduct.costo_paquete).toFixed(2)}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography variant="body2" color="text.secondary">
+                        Costo Total de Producción:
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'medium' }}>
                         ${parseFloat(detailProduct.costo_total).toFixed(2)}
-                      </Typography>
-                    </Box>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Peso del Empaque
-                      </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                        {detailProduct.peso_empaque || 0}g
-                      </Typography>
-                    </Box>
-                    <Box sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Costo por Gramo
-                      </Typography>
-                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                        {detailProduct.peso_empaque ?
-                          `$${(parseFloat(detailProduct.costo_total) / detailProduct.peso_empaque!).toFixed(4)}` :
-                          'N/A'
-                        }
                       </Typography>
                     </Box>
                   </Box>

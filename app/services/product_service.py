@@ -54,6 +54,13 @@ def create_product(db: Session, product: ProductCreate, user: User) -> ProductRe
         costo_envase=product.costo_envase,
         costo_caja=product.costo_caja,
         costo_transporte=product.costo_transporte,
+        costo_mano_obra=product.costo_mano_obra,
+        costo_energia=product.costo_energia,
+        costo_depreciacion=product.costo_depreciacion,
+        costo_mantenimiento=product.costo_mantenimiento,
+        costo_administrativo=product.costo_administrativo,
+        costo_comercializacion=product.costo_comercializacion,
+        costo_financiero=product.costo_financiero,
         peso_ingredientes_base=product.peso_ingredientes_base,
         peso_final_producido=product.peso_final_producido,
         peso_empaque=product.peso_empaque
@@ -188,6 +195,27 @@ def update_product(db: Session, product_id: int, product_update: ProductUpdate, 
 
     if product_update.costo_transporte is not None:
         product.costo_transporte = product_update.costo_transporte
+
+    if product_update.costo_mano_obra is not None:
+        product.costo_mano_obra = product_update.costo_mano_obra
+
+    if product_update.costo_energia is not None:
+        product.costo_energia = product_update.costo_energia
+
+    if product_update.costo_depreciacion is not None:
+        product.costo_depreciacion = product_update.costo_depreciacion
+
+    if product_update.costo_mantenimiento is not None:
+        product.costo_mantenimiento = product_update.costo_mantenimiento
+
+    if product_update.costo_administrativo is not None:
+        product.costo_administrativo = product_update.costo_administrativo
+
+    if product_update.costo_comercializacion is not None:
+        product.costo_comercializacion = product_update.costo_comercializacion
+
+    if product_update.costo_financiero is not None:
+        product.costo_financiero = product_update.costo_financiero
 
     if product_update.peso_ingredientes_base is not None:
         product.peso_ingredientes_base = product_update.peso_ingredientes_base
@@ -390,6 +418,13 @@ def duplicate_product(db: Session, product_id: int, new_name: str, new_peso_empa
         costo_envase=original.costo_envase,
         costo_caja=original.costo_caja,
         costo_transporte=original.costo_transporte,
+        costo_mano_obra=original.costo_mano_obra,
+        costo_energia=original.costo_energia,
+        costo_depreciacion=original.costo_depreciacion,
+        costo_mantenimiento=original.costo_mantenimiento,
+        costo_administrativo=original.costo_administrativo,
+        costo_comercializacion=original.costo_comercializacion,
+        costo_financiero=original.costo_financiero,
         peso_ingredientes_base=original.peso_ingredientes_base,
         peso_final_producido=original.peso_final_producido,
         peso_empaque=new_peso_empaque  # NEW PACKAGE WEIGHT
@@ -478,6 +513,13 @@ def _build_product_response(product: Product) -> ProductResponse:
         costo_envase=product.costo_envase or Decimal('0'),
         costo_caja=product.costo_caja or Decimal('0'),
         costo_transporte=product.costo_transporte,
+        costo_mano_obra=product.costo_mano_obra or Decimal('0'),
+        costo_energia=product.costo_energia or Decimal('0'),
+        costo_depreciacion=product.costo_depreciacion or Decimal('0'),
+        costo_mantenimiento=product.costo_mantenimiento or Decimal('0'),
+        costo_administrativo=product.costo_administrativo or Decimal('0'),
+        costo_comercializacion=product.costo_comercializacion or Decimal('0'),
+        costo_financiero=product.costo_financiero or Decimal('0'),
         iva_percentage=product.iva_percentage or 21.0,
         iva_publico=product.iva_publico,
         iva_mayorista=product.iva_mayorista,
@@ -501,6 +543,7 @@ def _build_product_response(product: Product) -> ProductResponse:
         precio_publico_con_iva_paquete=precios_empaque['precio_publico_con_iva_paquete'],
         precio_mayorista_con_iva_paquete=precios_empaque['precio_mayorista_con_iva_paquete'],
         precio_distribuidor_con_iva_paquete=precios_empaque['precio_distribuidor_con_iva_paquete'],
+        costo_por_gramo=product.calcular_costo_por_gramo_ajustado(),
         is_active=product.is_active,
         created_at=product.created_at,
         updated_at=product.updated_at,
