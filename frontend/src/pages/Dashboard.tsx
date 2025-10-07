@@ -45,6 +45,7 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [productsError, setProductsError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     nombre: '',
     precio_base: ''
@@ -59,6 +60,25 @@ const Dashboard: React.FC = () => {
     fetchMaterials();
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (error || success) {
+      const timer = setTimeout(() => {
+        setError(null);
+        setSuccess(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, success]);
+
+  useEffect(() => {
+    if (productsError) {
+      const timer = setTimeout(() => {
+        setProductsError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [productsError]);
 
   const fetchMaterials = async () => {
     try {
@@ -77,8 +97,9 @@ const Dashboard: React.FC = () => {
     try {
       const data = await apiService.getProducts();
       setProducts(data);
+      setProductsError(null);
     } catch (err: any) {
-      console.error('Error fetching products:', err);
+      setProductsError('Error al cargar los productos');
     }
   };
 
@@ -388,7 +409,7 @@ const Dashboard: React.FC = () => {
                       <>
                         <TableCell>{material.nombre}</TableCell>
                         <TableCell align="right">${parseFloat(material.precio_base).toFixed(2)}</TableCell>
-                        <TableCell align="right">${Number(parseFloat(material.precio_unidad_pequena).toFixed(6))}</TableCell>
+                        <TableCell align="right">${parseFloat(material.precio_unidad_pequena).toFixed(6)}</TableCell>
                         <TableCell align="center">
                           <IconButton onClick={() => handleEdit(material)} color="primary" size="small">
                             <Edit />
@@ -409,7 +430,14 @@ const Dashboard: React.FC = () => {
         )}
 
         {tabValue === 1 && (
-          <ProductManager materials={materials} />
+          <>
+            {productsError && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {productsError}
+              </Alert>
+            )}
+            <ProductManager materials={materials} />
+          </>
         )}
 
         {tabValue === 2 && (
