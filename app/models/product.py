@@ -37,6 +37,7 @@ class Product(BaseEntity):
 
     user = relationship("User", back_populates="products")
     product_materials = relationship("ProductMaterial", back_populates="product", cascade="all, delete-orphan")
+    inventories = relationship("Inventory", back_populates="product", cascade="all, delete-orphan")
 
     def calcular_costo_materiales(self) -> Decimal:
         """Calculate total cost of all materials only (excluding additional costs)"""

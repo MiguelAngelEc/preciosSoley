@@ -36,9 +36,10 @@ import { Product, ProductCreate, ProductMaterialCreate, Material, CostosTotalesR
 
 interface ProductManagerProps {
   materials: Material[];
+  onProductsChange?: () => void;
 }
 
-const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
+const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsChange }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -220,6 +221,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setSuccess('Producto creado exitosamente');
       await fetchProducts();
       await fetchTotalCosts();
+      // Notify parent component to refresh products
+      if (onProductsChange) {
+        await onProductsChange();
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Error al crear el producto');
     } finally {
@@ -333,6 +338,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setSuccess('Producto actualizado exitosamente');
       await fetchProducts();
       await fetchTotalCosts();
+      // Notify parent component to refresh products
+      if (onProductsChange) {
+        await onProductsChange();
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Error al actualizar el producto');
     } finally {
@@ -367,6 +376,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setSuccess('Producto duplicado exitosamente');
       await fetchProducts();
       await fetchTotalCosts();
+      // Notify parent component to refresh products
+      if (onProductsChange) {
+        await onProductsChange();
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Error al duplicar el producto');
     } finally {
@@ -386,6 +399,10 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials }) => {
       setSuccess('Producto eliminado exitosamente');
       await fetchProducts();
       await fetchTotalCosts();
+      // Notify parent component to refresh products
+      if (onProductsChange) {
+        await onProductsChange();
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Error al eliminar el producto');
     } finally {
