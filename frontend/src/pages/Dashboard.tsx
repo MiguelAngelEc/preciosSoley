@@ -34,7 +34,6 @@ import apiService from '../services/api';
 import { Material, MaterialCreate, Product } from '../types';
 import ProductManager from '../components/ProductManager';
 import ProformaManager from '../components/ProformaManager';
-import InventoryManager from '../components/InventoryManager';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -297,7 +296,6 @@ const Dashboard: React.FC = () => {
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="management tabs">
             <Tab label="Materiales" />
             <Tab label="Productos" />
-            <Tab label="Inventario" />
             <Tab label="Proformas" />
           </Tabs>
         </Box>
@@ -438,15 +436,11 @@ const Dashboard: React.FC = () => {
                 {productsError}
               </Alert>
             )}
-            <ProductManager materials={materials} onProductsChange={fetchProducts} />
+            <ProductManager materials={materials} />
           </>
         )}
 
         {tabValue === 2 && (
-          <InventoryManager products={products} />
-        )}
-
-        {tabValue === 3 && (
           <ProformaManager products={products} />
         )}
       </Container>

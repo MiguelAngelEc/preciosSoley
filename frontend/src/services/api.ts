@@ -16,14 +16,7 @@ import {
   CostosTotalesResponse,
   Proforma,
   ProformaCreate,
-  ProformaListResponse,
-  Inventory,
-  InventoryCreate,
-  InventoryUpdate,
-  InventoryMovement,
-  InventoryMovementCreate,
-  InventorySummary,
-  InventoryDashboard
+  ProformaListResponse
 } from '../types';
 
 // API Configuration
@@ -183,89 +176,6 @@ class ApiService {
 
   async duplicateProduct(productId: number, duplicateData: { nombre: string; peso_empaque: number }): Promise<Product> {
     const response: AxiosResponse<Product> = await this.api.post(`/api/products/${productId}/duplicate`, duplicateData);
-    return response.data;
-  }
-
-  // Inventory methods
-  async getInventories(skip: number = 0, limit: number = 100, filters?: {
-    product_id?: number;
-    lote?: string;
-    stock_status?: string;
-  }): Promise<Inventory[]> {
-    const params = new URLSearchParams({
-      skip: skip.toString(),
-      limit: limit.toString()
-    });
-
-    if (filters?.product_id) params.append('product_id', filters.product_id.toString());
-    if (filters?.lote) params.append('lote', filters.lote);
-    if (filters?.stock_status) params.append('stock_status', filters.stock_status);
-
-    const response: AxiosResponse<Inventory[]> = await this.api.get(`/api/inventory/?${params}`);
-    return response.data;
-  }
-
-  async getInventory(id: number): Promise<Inventory> {
-    const response: AxiosResponse<Inventory> = await this.api.get(`/api/inventory/${id}`);
-    return response.data;
-  }
-
-  async createInventory(inventory: InventoryCreate): Promise<Inventory> {
-    const response: AxiosResponse<Inventory> = await this.api.post('/api/inventory/', inventory);
-    return response.data;
-  }
-
-  async updateInventory(id: number, inventory: InventoryUpdate): Promise<Inventory> {
-    const response: AxiosResponse<Inventory> = await this.api.put(`/api/inventory/${id}`, inventory);
-    return response.data;
-  }
-
-  async deleteInventory(id: number): Promise<void> {
-    await this.api.delete(`/api/inventory/${id}`);
-  }
-
-  async registerStockMovement(inventoryId: number, movement: InventoryMovementCreate, usuarioResponsable: string): Promise<InventoryMovement> {
-    const response: AxiosResponse<InventoryMovement> = await this.api.post(
-      `/api/inventory/${inventoryId}/movements?usuario_responsable=${encodeURIComponent(usuarioResponsable)}`,
-      movement
-    );
-    return response.data;
-  }
-
-  async getInventoryMovements(inventoryId: number, skip: number = 0, limit: number = 100): Promise<InventoryMovement[]> {
-    const response: AxiosResponse<InventoryMovement[]> = await this.api.get(
-      `/api/inventory/${inventoryId}/movements`,
-      { params: { skip, limit } }
-    );
-    return response.data;
-  }
-
-  async getInventorySummary(): Promise<InventoryDashboard> {
-    const response: AxiosResponse<InventoryDashboard> = await this.api.get('/api/inventory/summary');
-    return response.data;
-  }
-
-  async getLowStockAlerts(): Promise<InventorySummary[]> {
-    const response: AxiosResponse<InventorySummary[]> = await this.api.get('/api/inventory/low-stock');
-    return response.data;
-  }
-
-  async getInventoryByProduct(productId: number): Promise<InventorySummary[]> {
-    const response: AxiosResponse<InventorySummary[]> = await this.api.get(`/api/inventory/by-product/${productId}`);
-    return response.data;
-  }
-
-  async getDailyProductionReport(fecha?: string): Promise<Inventory[]> {
-    const params = fecha ? { fecha } : {};
-    const response: AxiosResponse<Inventory[]> = await this.api.get('/api/inventory/report/daily', { params });
-    return response.data;
-  }
-
-  async getPeriodReport(fechaInicio: string, fechaFin: string, productId?: number): Promise<Inventory[]> {
-    const params: any = { fecha_inicio: fechaInicio, fecha_fin: fechaFin };
-    if (productId) params.product_id = productId;
-
-    const response: AxiosResponse<Inventory[]> = await this.api.get('/api/inventory/report/period', { params });
     return response.data;
   }
 }
