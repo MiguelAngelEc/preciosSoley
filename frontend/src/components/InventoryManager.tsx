@@ -37,7 +37,6 @@ import {
   SwapHoriz,
   Warning,
   CheckCircle,
-  Error,
   Info
 } from '@mui/icons-material';
 import apiService from '../services/api';
@@ -199,9 +198,9 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
       return;
     }
 
-    const cantidad = parseFloat(newInventory.cantidad_producida);
-    if (isNaN(cantidad) || cantidad <= 0) {
-      setError('La cantidad producida debe ser un número positivo');
+    const cantidad = parseInt(newInventory.cantidad_producida);
+    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) {
+      setError('La cantidad producida debe ser un número entero positivo');
       return;
     }
 
@@ -298,9 +297,9 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
       return;
     }
 
-    const cantidad = parseFloat(newMovement.cantidad);
-    if (isNaN(cantidad) || cantidad <= 0) {
-      setError('La cantidad debe ser un número positivo');
+    const cantidad = parseInt(newMovement.cantidad);
+    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) {
+      setError('La cantidad debe ser un número entero positivo');
       return;
     }
 
@@ -429,7 +428,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
                 Producción Hoy
               </Typography>
               <Typography variant="h4">
-                {parseFloat(dashboard.today_production).toFixed(2)} kg
+                {parseFloat(dashboard.today_production).toFixed(0)} unidades
               </Typography>
             </CardContent>
           </Card>
@@ -534,10 +533,10 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
                   <TableCell>{inventory.product?.nombre || 'Producto desconocido'}</TableCell>
                   <TableCell>{inventory.lote || '-'}</TableCell>
                   <TableCell>{new Date(inventory.fecha_produccion).toLocaleDateString()}</TableCell>
-                  <TableCell align="right">{parseFloat(inventory.cantidad_producida).toFixed(2)} kg</TableCell>
-                  <TableCell align="right">{parseFloat(inventory.stock_actual).toFixed(2)} kg</TableCell>
+                  <TableCell align="right">{parseFloat(inventory.cantidad_producida).toFixed(0)} unidades</TableCell>
+                  <TableCell align="right">{parseFloat(inventory.stock_actual).toFixed(0)} unidades</TableCell>
                   <TableCell align="right">
-                    {inventory.stock_minimo ? `${parseFloat(inventory.stock_minimo).toFixed(2)} kg` : '-'}
+                    {inventory.stock_minimo ? `${parseFloat(inventory.stock_minimo).toFixed(0)} unidades` : '-'}
                   </TableCell>
                   <TableCell>
                     <Chip
@@ -625,21 +624,21 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
 
             <TextField
               fullWidth
-              label="Cantidad Producida (kg)"
+              label="Cantidad Producida (unidades)"
               type="number"
               value={newInventory.cantidad_producida}
               onChange={(e) => setNewInventory(prev => ({ ...prev, cantidad_producida: e.target.value }))}
               required
-              inputProps={{ min: 0, step: 0.01 }}
+              inputProps={{ min: 0, step: 1 }}
             />
 
             <TextField
               fullWidth
-              label="Stock Mínimo (kg)"
+              label="Stock Mínimo (unidades)"
               type="number"
               value={newInventory.stock_minimo}
               onChange={(e) => setNewInventory(prev => ({ ...prev, stock_minimo: e.target.value }))}
-              inputProps={{ min: 0, step: 0.01 }}
+              inputProps={{ min: 0, step: 1 }}
             />
 
             <TextField
@@ -706,21 +705,21 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
 
             <TextField
               fullWidth
-              label="Cantidad Producida (kg)"
+              label="Cantidad Producida (unidades)"
               type="number"
               value={editInventory.cantidad_producida || ''}
               onChange={(e) => setEditInventory(prev => ({ ...prev, cantidad_producida: e.target.value }))}
               required
-              inputProps={{ min: 0, step: 0.01 }}
+              inputProps={{ min: 0, step: 1 }}
             />
 
             <TextField
               fullWidth
-              label="Stock Mínimo (kg)"
+              label="Stock Mínimo (unidades)"
               type="number"
               value={editInventory.stock_minimo || ''}
               onChange={(e) => setEditInventory(prev => ({ ...prev, stock_minimo: e.target.value }))}
-              inputProps={{ min: 0, step: 0.01 }}
+              inputProps={{ min: 0, step: 1 }}
             />
 
             <TextField
@@ -778,12 +777,12 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
 
             <TextField
               fullWidth
-              label="Cantidad (kg)"
+              label="Cantidad (unidades)"
               type="number"
               value={newMovement.cantidad}
               onChange={(e) => setNewMovement(prev => ({ ...prev, cantidad: e.target.value }))}
               required
-              inputProps={{ min: 0, step: 0.01 }}
+              inputProps={{ min: 0, step: 1 }}
             />
 
             <TextField
@@ -804,7 +803,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
 
             {movementInventory && (
               <Alert severity="info">
-                Stock actual: {parseFloat(movementInventory.stock_actual).toFixed(2)} kg
+                Stock actual: {parseFloat(movementInventory.stock_actual).toFixed(0)} unidades
               </Alert>
             )}
           </Box>
@@ -854,9 +853,9 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
                           {movement.movimiento_display}
                         </Box>
                       </TableCell>
-                      <TableCell align="right">{parseFloat(movement.cantidad).toFixed(2)} kg</TableCell>
-                      <TableCell align="right">{parseFloat(movement.stock_anterior).toFixed(2)} kg</TableCell>
-                      <TableCell align="right">{parseFloat(movement.stock_posterior).toFixed(2)} kg</TableCell>
+                      <TableCell align="right">{parseFloat(movement.cantidad).toFixed(0)} unidades</TableCell>
+                      <TableCell align="right">{parseFloat(movement.stock_anterior).toFixed(0)} unidades</TableCell>
+                      <TableCell align="right">{parseFloat(movement.stock_posterior).toFixed(0)} unidades</TableCell>
                       <TableCell>{movement.motivo}</TableCell>
                       <TableCell>{movement.usuario_responsable}</TableCell>
                     </TableRow>

@@ -30,9 +30,11 @@ def create_inventory_entry(db: Session, inventory: InventoryCreate, user: User) 
             detail="Product not found"
         )
 
-    # Calculate unit cost from product cost
-    costo_unitario = product.calcular_costo_por_gramo_ajustado()
-    costo_total = costo_unitario * inventory.cantidad_producida
+    # Calculate unit cost: cost per gram * grams per unit
+    costo_por_gramo = product.calcular_costo_por_gramo_ajustado()
+    peso_por_unidad = product.peso_empaque or product.peso_final_producido or Decimal('1')
+    costo_unitario = costo_por_gramo * peso_por_unidad  # Cost per unit
+    costo_total = costo_unitario * inventory.cantidad_producida  # Total cost for units produced
 
     # Create inventory entry
     db_inventory = Inventory(
