@@ -31,9 +31,10 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
-import { Material, MaterialCreate, Product } from '../types';
+import { Material, MaterialCreate, MaterialUpdate, Product } from '../types';
 import ProductManager from '../components/ProductManager';
 import ProformaManager from '../components/ProformaManager';
+import InventoryManager from '../components/InventoryManager';
 
 const Dashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -149,7 +150,8 @@ const Dashboard: React.FC = () => {
       const newMaterial: MaterialCreate = {
         nombre: formData.nombre.trim(),
         precio_base: precioBase,
-        unidad_base: 'kg'
+        unidad_base: 'kg',
+        cantidades_deseadas: []
       };
 
       await apiService.createMaterial(newMaterial);
@@ -200,7 +202,8 @@ const Dashboard: React.FC = () => {
       setLoading(true);
       await apiService.updateMaterial(editingId!, {
         nombre: editFormData.nombre.trim(),
-        precio_base: precioBase
+        precio_base: precioBase,
+        unidad_base: 'kg'
       });
       setEditingId(null);
       setEditFormData({ nombre: '', precio_base: '' });
@@ -296,6 +299,7 @@ const Dashboard: React.FC = () => {
           <Tabs value={tabValue} onChange={handleTabChange} aria-label="management tabs">
             <Tab label="Materiales" />
             <Tab label="Productos" />
+            <Tab label="Inventario" />
             <Tab label="Proformas" />
           </Tabs>
         </Box>
@@ -436,11 +440,15 @@ const Dashboard: React.FC = () => {
                 {productsError}
               </Alert>
             )}
-            <ProductManager materials={materials} />
+            <ProductManager materials={materials} onProductsChange={fetchProducts} />
           </>
         )}
 
         {tabValue === 2 && (
+          <InventoryManager products={products} onProductsChange={fetchProducts} />
+        )}
+
+        {tabValue === 3 && (
           <ProformaManager products={products} />
         )}
       </Container>

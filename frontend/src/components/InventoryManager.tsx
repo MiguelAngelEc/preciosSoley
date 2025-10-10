@@ -52,9 +52,10 @@ import {
 
 interface InventoryManagerProps {
   products: Product[];
+  onProductsChange?: () => void;
 }
 
-const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
+const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProductsChange }) => {
   const [inventories, setInventories] = useState<Inventory[]>([]);
   const [filteredInventories, setFilteredInventories] = useState<Inventory[]>([]);
   const [searchTerm, setSearchTerm] = useState('');

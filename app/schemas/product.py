@@ -157,7 +157,7 @@ class ProductResponse(BaseModel):
     costo_por_gramo: Decimal
     is_active: bool
     created_at: datetime
-    updated_at: datetime
+    updated_at: Optional[datetime] = None
     product_materials: List[ProductMaterialResponse] = []
 
     class Config:

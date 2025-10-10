@@ -28,6 +28,12 @@ export interface MaterialUpdate {
   unidad_base?: 'kg' | 'litros';
 }
 
+export interface MaterialUpdate {
+  nombre?: string;
+  precio_base?: number | string;
+  unidad_base?: 'kg' | 'litros';
+}
+
 export interface CostosResponse {
   material: Material;
   costos: Record<string, string>;
@@ -88,7 +94,7 @@ export interface Product {
   costo_por_gramo: string;
   is_active: boolean;
   created_at: string;
-  updated_at: string;
+  updated_at?: string;
   product_materials: ProductMaterial[];
 }
 
