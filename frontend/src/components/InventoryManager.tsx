@@ -598,7 +598,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               <InputLabel>Producto</InputLabel>
               <Select
                 value={newInventory.product_id || ''}
-                onChange={(e) => setNewInventory(prev => ({ ...prev, product_id: Number(e.target.value) }))}
+                onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, product_id: Number(e.target.value) }))}
                 label="Producto"
               >
                 <MenuItem value="">
@@ -617,7 +617,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Fecha de Producción"
               type="date"
               value={newInventory.fecha_produccion}
-              onChange={(e) => setNewInventory(prev => ({ ...prev, fecha_produccion: e.target.value }))}
+              onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, fecha_produccion: e.target.value }))}
               required
               InputLabelProps={{ shrink: true }}
             />
@@ -627,7 +627,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Cantidad Producida (unidades)"
               type="number"
               value={newInventory.cantidad_producida}
-              onChange={(e) => setNewInventory(prev => ({ ...prev, cantidad_producida: e.target.value }))}
+              onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, cantidad_producida: e.target.value }))}
               required
               inputProps={{ min: 0, step: 1 }}
             />
@@ -637,7 +637,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Stock Mínimo (unidades)"
               type="number"
               value={newInventory.stock_minimo}
-              onChange={(e) => setNewInventory(prev => ({ ...prev, stock_minimo: e.target.value }))}
+              onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, stock_minimo: e.target.value }))}
               inputProps={{ min: 0, step: 1 }}
             />
 
@@ -645,14 +645,14 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               fullWidth
               label="Ubicación"
               value={newInventory.ubicacion}
-              onChange={(e) => setNewInventory(prev => ({ ...prev, ubicacion: e.target.value }))}
+              onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, ubicacion: e.target.value }))}
             />
 
             <TextField
               fullWidth
               label="Lote/Batch"
               value={newInventory.lote}
-              onChange={(e) => setNewInventory(prev => ({ ...prev, lote: e.target.value }))}
+              onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, lote: e.target.value }))}
             />
 
             <TextField
@@ -661,7 +661,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               multiline
               rows={3}
               value={newInventory.notas}
-              onChange={(e) => setNewInventory(prev => ({ ...prev, notas: e.target.value }))}
+              onChange={(e) => setNewInventory((prev: InventoryCreate) => ({ ...prev, notas: e.target.value }))}
             />
           </Box>
         </DialogContent>
@@ -682,7 +682,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               <InputLabel>Producto</InputLabel>
               <Select
                 value={editInventory.product_id || ''}
-                onChange={(e) => setEditInventory(prev => ({ ...prev, product_id: Number(e.target.value) }))}
+                onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, product_id: Number(e.target.value) }))}
                 label="Producto"
               >
                 {products.map((product) => (
@@ -698,7 +698,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Fecha de Producción"
               type="date"
               value={editInventory.fecha_produccion || ''}
-              onChange={(e) => setEditInventory(prev => ({ ...prev, fecha_produccion: e.target.value }))}
+              onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, fecha_produccion: e.target.value }))}
               required
               InputLabelProps={{ shrink: true }}
             />
@@ -708,7 +708,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Cantidad Producida (unidades)"
               type="number"
               value={editInventory.cantidad_producida || ''}
-              onChange={(e) => setEditInventory(prev => ({ ...prev, cantidad_producida: e.target.value }))}
+              onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, cantidad_producida: e.target.value }))}
               required
               inputProps={{ min: 0, step: 1 }}
             />
@@ -718,7 +718,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Stock Mínimo (unidades)"
               type="number"
               value={editInventory.stock_minimo || ''}
-              onChange={(e) => setEditInventory(prev => ({ ...prev, stock_minimo: e.target.value }))}
+              onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, stock_minimo: e.target.value }))}
               inputProps={{ min: 0, step: 1 }}
             />
 
@@ -726,14 +726,14 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               fullWidth
               label="Ubicación"
               value={editInventory.ubicacion || ''}
-              onChange={(e) => setEditInventory(prev => ({ ...prev, ubicacion: e.target.value }))}
+              onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, ubicacion: e.target.value }))}
             />
 
             <TextField
               fullWidth
               label="Lote/Batch"
               value={editInventory.lote || ''}
-              onChange={(e) => setEditInventory(prev => ({ ...prev, lote: e.target.value }))}
+              onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, lote: e.target.value }))}
             />
 
             <TextField
@@ -742,7 +742,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               multiline
               rows={3}
               value={editInventory.notas || ''}
-              onChange={(e) => setEditInventory(prev => ({ ...prev, notas: e.target.value }))}
+              onChange={(e) => setEditInventory((prev: InventoryUpdate) => ({ ...prev, notas: e.target.value }))}
             />
           </Box>
         </DialogContent>
@@ -766,7 +766,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               <InputLabel>Tipo de Movimiento</InputLabel>
               <Select
                 value={newMovement.tipo_movimiento}
-                onChange={(e) => setNewMovement(prev => ({ ...prev, tipo_movimiento: e.target.value as any }))}
+                onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, tipo_movimiento: e.target.value as any }))}
                 label="Tipo de Movimiento"
               >
                 <MenuItem value="entrada">Entrada (+)</MenuItem>
@@ -780,7 +780,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               label="Cantidad (unidades)"
               type="number"
               value={newMovement.cantidad}
-              onChange={(e) => setNewMovement(prev => ({ ...prev, cantidad: e.target.value }))}
+              onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, cantidad: e.target.value }))}
               required
               inputProps={{ min: 0, step: 1 }}
             />
@@ -789,7 +789,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               fullWidth
               label="Motivo"
               value={newMovement.motivo}
-              onChange={(e) => setNewMovement(prev => ({ ...prev, motivo: e.target.value }))}
+              onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, motivo: e.target.value }))}
               required
             />
 
@@ -797,7 +797,7 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products }) => {
               fullWidth
               label="Referencia (opcional)"
               value={newMovement.referencia}
-              onChange={(e) => setNewMovement(prev => ({ ...prev, referencia: e.target.value }))}
+              onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, referencia: e.target.value }))}
               placeholder="Número de proforma, orden, etc."
             />
 
