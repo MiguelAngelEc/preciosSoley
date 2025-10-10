@@ -331,7 +331,7 @@ const Dashboard: React.FC = () => {
             <Box sx={{ flex: '1 1 300px', minWidth: '200px' }}>
               <TextField
                 fullWidth
-                label="Precio por Kilogramo ($)"
+                label="Precio por Kilogramo"
                 name="precio_base"
                 type="number"
                 value={formData.precio_base}
