@@ -12,6 +12,7 @@ import {
   Alert
 } from '@mui/material';
 import apiService from '../services/api';
+import useDecimalInput from '../hooks/useDecimalInput';
 
 interface UnitCalculatorProps {
   productId: number;
@@ -44,24 +45,25 @@ const UNIT_OPTIONS = [
 ];
 
 const UnitCalculator: React.FC<UnitCalculatorProps> = ({ productId }) => {
-  const [quantity, setQuantity] = useState<number>(1);
   const [unit, setUnit] = useState<string>('g');
   const [result, setResult] = useState<CalculationResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const quantityInput = useDecimalInput(1, { min: 0.01, step: 0.01 });
+
   useEffect(() => {
-    if (quantity > 0) {
+    if (quantityInput.numericValue > 0) {
       calculateCost();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [quantity, unit, productId]);
+  }, [quantityInput.numericValue, unit, productId]);
 
   const calculateCost = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await apiService.calculateCostByUnit(productId, quantity, unit);
+      const data = await apiService.calculateCostByUnit(productId, quantityInput.numericValue, unit);
       setResult(data);
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Error al calcular el costo');
@@ -85,15 +87,11 @@ const UnitCalculator: React.FC<UnitCalculatorProps> = ({ productId }) => {
         <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
           <TextField
             label="Cantidad"
-            type="number"
-            value={quantity}
-            onChange={(e) => {
-              const value = parseFloat(e.target.value);
-              if (!isNaN(value) && value > 0) {
-                setQuantity(value);
-              }
-            }}
-            inputProps={{ min: 0.01, step: 0.01 }}
+            value={quantityInput.value}
+            onChange={quantityInput.handleChange}
+            onBlur={quantityInput.handleBlur}
+            error={!!quantityInput.error}
+            helperText={quantityInput.error}
             sx={{ flex: 1 }}
           />
 

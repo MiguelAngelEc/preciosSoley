@@ -31,6 +31,7 @@ import {
 import apiService from '../services/api';
 import { Proforma, ProformaCreate, Product } from '../types';
 import ProformaDetailModal from './ProformaDetailModal';
+import useDecimalInput from '../hooks/useDecimalInput';
 
 interface ProformaManagerProps {
   products: Product[];
@@ -51,8 +52,9 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ products }) => {
   const [clienteTelefono, setClienteTelefono] = useState('');
   const [clienteEmail, setClienteEmail] = useState('');
   const [tipoCliente, setTipoCliente] = useState<'publico' | 'mayorista' | 'distribuidor'>('publico');
-  const [ivaAplicado, setIvaAplicado] = useState(12);
   const [selectedProducts, setSelectedProducts] = useState<{ productId: number; cantidad: number }[]>([]);
+
+  const ivaInput = useDecimalInput(12, { min: 0, max: 100, step: 0.01 });
 
   // Detail modal state
   const [selectedProforma, setSelectedProforma] = useState<Proforma | null>(null);
@@ -132,7 +134,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ products }) => {
         cliente_direccion: clienteDireccion.trim() || undefined,
         cliente_telefono: clienteTelefono.trim() || undefined,
         cliente_email: clienteEmail.trim() || undefined,
-        iva_aplicado: ivaAplicado,
+        iva_aplicado: ivaInput.numericValue,
         items: selectedProducts.map(item => ({
           product_id: item.productId,
           cantidad: item.cantidad
@@ -160,7 +162,7 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ products }) => {
     setClienteTelefono('');
     setClienteEmail('');
     setTipoCliente('publico');
-    setIvaAplicado(12);
+    ivaInput.reset(12);
     setSelectedProducts([]);
   };
 
@@ -407,10 +409,11 @@ const ProformaManager: React.FC<ProformaManagerProps> = ({ products }) => {
             </FormControl>
             <TextField
               label="IVA (%)"
-              type="number"
-              value={ivaAplicado}
-              onChange={(e) => setIvaAplicado(Number(e.target.value))}
-              inputProps={{ min: 0, max: 100, step: 0.01 }}
+              value={ivaInput.value}
+              onChange={ivaInput.handleChange}
+              onBlur={ivaInput.handleBlur}
+              error={!!ivaInput.error}
+              helperText={ivaInput.error}
             />
           </Box>
 

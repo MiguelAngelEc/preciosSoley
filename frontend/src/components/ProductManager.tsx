@@ -33,6 +33,7 @@ import {
 } from '@mui/icons-material';
 import apiService from '../services/api';
 import { Product, ProductCreate, ProductMaterialCreate, Material, CostosTotalesResponse } from '../types';
+import useDecimalInput from '../hooks/useDecimalInput';
 
 interface ProductManagerProps {
   materials: Material[];
@@ -69,6 +70,23 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
   const [newProductPesoEmpaque, setNewProductPesoEmpaque] = useState<number | null>(null);
   const [newProductMaterials, setNewProductMaterials] = useState<ProductMaterialCreate[]>([]);
 
+  // Decimal input hooks for create
+  const ivaInput = useDecimalInput(newProductIvaPercentage, { min: 0, max: 100, step: 0.01 });
+  const margenPublicoInput = useDecimalInput(newProductMargenPublico, { min: 0, max: 99.99, step: 0.01 });
+  const margenMayoristaInput = useDecimalInput(newProductMargenMayorista, { min: 0, max: 99.99, step: 0.01 });
+  const margenDistribuidorInput = useDecimalInput(newProductMargenDistribuidor, { min: 0, max: 99.99, step: 0.01 });
+  const costoEtiquetaInput = useDecimalInput(newProductCostoEtiqueta, { min: 0, step: 0.01 });
+  const costoEnvaseInput = useDecimalInput(newProductCostoEnvase, { min: 0, step: 0.01 });
+  const costoCajaInput = useDecimalInput(newProductCostoCaja, { min: 0, step: 0.01 });
+  const costoTransporteInput = useDecimalInput(newProductCostoTransporte, { min: 0, step: 0.01, required: true });
+  const costoManoObraInput = useDecimalInput(newProductCostoManoObra, { min: 0, step: 0.01 });
+  const costoEnergiaInput = useDecimalInput(newProductCostoEnergia, { min: 0, step: 0.01 });
+  const costoDepreciacionInput = useDecimalInput(newProductCostoDepreciacion, { min: 0, step: 0.01 });
+  const costoMantenimientoInput = useDecimalInput(newProductCostoMantenimiento, { min: 0, step: 0.01 });
+  const costoAdministrativoInput = useDecimalInput(newProductCostoAdministrativo, { min: 0, step: 0.01 });
+  const costoComercializacionInput = useDecimalInput(newProductCostoComercializacion, { min: 0, step: 0.01 });
+  const costoFinancieroInput = useDecimalInput(newProductCostoFinanciero, { min: 0, step: 0.01 });
+
   // Product editing state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editProductName, setEditProductName] = useState('');
@@ -89,6 +107,23 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
   const [editProductCostoFinanciero, setEditProductCostoFinanciero] = useState<string>('0');
   const [editProductPesoEmpaque, setEditProductPesoEmpaque] = useState<number | null>(null);
   const [editProductMaterials, setEditProductMaterials] = useState<ProductMaterialCreate[]>([]);
+
+  // Decimal input hooks for edit
+  const editIvaInput = useDecimalInput(editProductIvaPercentage, { min: 0, max: 100, step: 0.01 });
+  const editMargenPublicoInput = useDecimalInput(editProductMargenPublico, { min: 0, max: 99.99, step: 0.01 });
+  const editMargenMayoristaInput = useDecimalInput(editProductMargenMayorista, { min: 0, max: 99.99, step: 0.01 });
+  const editMargenDistribuidorInput = useDecimalInput(editProductMargenDistribuidor, { min: 0, max: 99.99, step: 0.01 });
+  const editCostoEtiquetaInput = useDecimalInput(editProductCostoEtiqueta, { min: 0, step: 0.01 });
+  const editCostoEnvaseInput = useDecimalInput(editProductCostoEnvase, { min: 0, step: 0.01 });
+  const editCostoCajaInput = useDecimalInput(editProductCostoCaja, { min: 0, step: 0.01 });
+  const editCostoTransporteInput = useDecimalInput(editProductCostoTransporte, { min: 0, step: 0.01, required: true });
+  const editCostoManoObraInput = useDecimalInput(editProductCostoManoObra, { min: 0, step: 0.01 });
+  const editCostoEnergiaInput = useDecimalInput(editProductCostoEnergia, { min: 0, step: 0.01 });
+  const editCostoDepreciacionInput = useDecimalInput(editProductCostoDepreciacion, { min: 0, step: 0.01 });
+  const editCostoMantenimientoInput = useDecimalInput(editProductCostoMantenimiento, { min: 0, step: 0.01 });
+  const editCostoAdministrativoInput = useDecimalInput(editProductCostoAdministrativo, { min: 0, step: 0.01 });
+  const editCostoComercializacionInput = useDecimalInput(editProductCostoComercializacion, { min: 0, step: 0.01 });
+  const editCostoFinancieroInput = useDecimalInput(editProductCostoFinanciero, { min: 0, step: 0.01 });
 
   // Product detail modal state
   // Product duplicate state
@@ -178,21 +213,21 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
       setLoading(true);
       const productData: ProductCreate = {
         nombre: newProductName.trim(),
-        iva_percentage: newProductIvaPercentage ?? undefined,
-        margen_publico: newProductMargenPublico,
-        margen_mayorista: newProductMargenMayorista,
-        margen_distribuidor: newProductMargenDistribuidor,
-        costo_etiqueta: parseFloat(newProductCostoEtiqueta) || 0,
-        costo_envase: parseFloat(newProductCostoEnvase) || 0,
-        costo_caja: parseFloat(newProductCostoCaja) || 0,
-        costo_transporte: parseFloat(newProductCostoTransporte) || 0,
-        costo_mano_obra: parseFloat(newProductCostoManoObra) || 0,
-        costo_energia: parseFloat(newProductCostoEnergia) || 0,
-        costo_depreciacion: parseFloat(newProductCostoDepreciacion) || 0,
-        costo_mantenimiento: parseFloat(newProductCostoMantenimiento) || 0,
-        costo_administrativo: parseFloat(newProductCostoAdministrativo) || 0,
-        costo_comercializacion: parseFloat(newProductCostoComercializacion) || 0,
-        costo_financiero: parseFloat(newProductCostoFinanciero) || 0,
+        iva_percentage: ivaInput.numericValue || undefined,
+        margen_publico: margenPublicoInput.numericValue,
+        margen_mayorista: margenMayoristaInput.numericValue,
+        margen_distribuidor: margenDistribuidorInput.numericValue,
+        costo_etiqueta: costoEtiquetaInput.numericValue,
+        costo_envase: costoEnvaseInput.numericValue,
+        costo_caja: costoCajaInput.numericValue,
+        costo_transporte: costoTransporteInput.numericValue,
+        costo_mano_obra: costoManoObraInput.numericValue,
+        costo_energia: costoEnergiaInput.numericValue,
+        costo_depreciacion: costoDepreciacionInput.numericValue,
+        costo_mantenimiento: costoMantenimientoInput.numericValue,
+        costo_administrativo: costoAdministrativoInput.numericValue,
+        costo_comercializacion: costoComercializacionInput.numericValue,
+        costo_financiero: costoFinancieroInput.numericValue,
         peso_empaque: newProductPesoEmpaque ?? undefined,
         product_materials: newProductMaterials
       };
@@ -217,6 +252,22 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
       setNewProductCostoFinanciero('0');
       setNewProductPesoEmpaque(null);
       setNewProductMaterials([]);
+      // Reset hooks
+      ivaInput.reset(0);
+      margenPublicoInput.reset(0);
+      margenMayoristaInput.reset(0);
+      margenDistribuidorInput.reset(0);
+      costoEtiquetaInput.reset(0);
+      costoEnvaseInput.reset(0);
+      costoCajaInput.reset(0);
+      costoTransporteInput.reset(0);
+      costoManoObraInput.reset(0);
+      costoEnergiaInput.reset(0);
+      costoDepreciacionInput.reset(0);
+      costoMantenimientoInput.reset(0);
+      costoAdministrativoInput.reset(0);
+      costoComercializacionInput.reset(0);
+      costoFinancieroInput.reset(0);
       setError(null);
       setSuccess('Producto creado exitosamente');
       await fetchProducts();
@@ -257,6 +308,22 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
         cantidad: pm.cantidad
       }))
     );
+    // Reset edit hooks with product values
+    editIvaInput.reset(product.iva_percentage || 0);
+    editMargenPublicoInput.reset(product.margen_publico);
+    editMargenMayoristaInput.reset(product.margen_mayorista);
+    editMargenDistribuidorInput.reset(product.margen_distribuidor);
+    editCostoEtiquetaInput.reset(parseFloat(product.costo_etiqueta));
+    editCostoEnvaseInput.reset(parseFloat(product.costo_envase));
+    editCostoCajaInput.reset(parseFloat(product.costo_caja));
+    editCostoTransporteInput.reset(parseFloat(product.costo_transporte));
+    editCostoManoObraInput.reset(parseFloat(product.costo_mano_obra));
+    editCostoEnergiaInput.reset(parseFloat(product.costo_energia));
+    editCostoDepreciacionInput.reset(parseFloat(product.costo_depreciacion));
+    editCostoMantenimientoInput.reset(parseFloat(product.costo_mantenimiento));
+    editCostoAdministrativoInput.reset(parseFloat(product.costo_administrativo));
+    editCostoComercializacionInput.reset(parseFloat(product.costo_comercializacion));
+    editCostoFinancieroInput.reset(parseFloat(product.costo_financiero));
   };
 
   const handleSaveEdit = async () => {
@@ -295,21 +362,21 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
       setLoading(true);
       const productData: ProductCreate = {
         nombre: editProductName.trim(),
-        iva_percentage: editProductIvaPercentage ?? undefined,
-        margen_publico: editProductMargenPublico,
-        margen_mayorista: editProductMargenMayorista,
-        margen_distribuidor: editProductMargenDistribuidor,
-        costo_etiqueta: parseFloat(editProductCostoEtiqueta) || 0,
-        costo_envase: parseFloat(editProductCostoEnvase) || 0,
-        costo_caja: parseFloat(editProductCostoCaja) || 0,
-        costo_transporte: parseFloat(editProductCostoTransporte) || 0,
-        costo_mano_obra: parseFloat(editProductCostoManoObra) || 0,
-        costo_energia: parseFloat(editProductCostoEnergia) || 0,
-        costo_depreciacion: parseFloat(editProductCostoDepreciacion) || 0,
-        costo_mantenimiento: parseFloat(editProductCostoMantenimiento) || 0,
-        costo_administrativo: parseFloat(editProductCostoAdministrativo) || 0,
-        costo_comercializacion: parseFloat(editProductCostoComercializacion) || 0,
-        costo_financiero: parseFloat(editProductCostoFinanciero) || 0,
+        iva_percentage: editIvaInput.numericValue || undefined,
+        margen_publico: editMargenPublicoInput.numericValue,
+        margen_mayorista: editMargenMayoristaInput.numericValue,
+        margen_distribuidor: editMargenDistribuidorInput.numericValue,
+        costo_etiqueta: editCostoEtiquetaInput.numericValue,
+        costo_envase: editCostoEnvaseInput.numericValue,
+        costo_caja: editCostoCajaInput.numericValue,
+        costo_transporte: editCostoTransporteInput.numericValue,
+        costo_mano_obra: editCostoManoObraInput.numericValue,
+        costo_energia: editCostoEnergiaInput.numericValue,
+        costo_depreciacion: editCostoDepreciacionInput.numericValue,
+        costo_mantenimiento: editCostoMantenimientoInput.numericValue,
+        costo_administrativo: editCostoAdministrativoInput.numericValue,
+        costo_comercializacion: editCostoComercializacionInput.numericValue,
+        costo_financiero: editCostoFinancieroInput.numericValue,
         peso_empaque: editProductPesoEmpaque ?? undefined,
         product_materials: editProductMaterials
       };
@@ -615,28 +682,12 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           <TextField
             fullWidth
             label="Porcentaje de IVA"
-            type="number"
-            value={newProductIvaPercentage ?? ''}
-            onChange={(e) => {
-              const inputValue = e.target.value;
-              if (inputValue === '') {
-                setNewProductIvaPercentage(null);
-              } else {
-                const value = parseFloat(inputValue);
-                if (!isNaN(value) && value >= 0 && value <= 100) {
-                  setNewProductIvaPercentage(value);
-                }
-              }
-            }}
-            onBlur={(e) => {
-              const value = parseFloat(e.target.value);
-              if (isNaN(value) || value < 0 || value > 100) {
-                setNewProductIvaPercentage(21); // Default to 21% if invalid
-              }
-            }}
-            inputProps={{ min: 0, max: 100, step: 0.01 }}
+            value={ivaInput.value}
+            onChange={ivaInput.handleChange}
+            onBlur={ivaInput.handleBlur}
+            error={!!ivaInput.error}
+            helperText={ivaInput.error || "Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."}
             sx={{ mb: 2 }}
-            helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
            />
 
            <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
@@ -647,62 +698,29 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
              <TextField
                fullWidth
                label="Margen Público (%)"
-               type="number"
-               value={newProductMargenPublico === 0 ? '' : newProductMargenPublico}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductMargenPublico(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0 && value < 100) {
-                     setNewProductMargenPublico(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-               helperText="Margen para ventas al público"
+               value={margenPublicoInput.value}
+               onChange={margenPublicoInput.handleChange}
+               onBlur={margenPublicoInput.handleBlur}
+               error={!!margenPublicoInput.error}
+               helperText={margenPublicoInput.error || "Margen para ventas al público"}
              />
              <TextField
                fullWidth
                label="Margen Mayorista (%)"
-               type="number"
-               value={newProductMargenMayorista === 0 ? '' : newProductMargenMayorista}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductMargenMayorista(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0 && value < 100) {
-                     setNewProductMargenMayorista(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-               helperText="Margen para ventas mayoristas"
+               value={margenMayoristaInput.value}
+               onChange={margenMayoristaInput.handleChange}
+               onBlur={margenMayoristaInput.handleBlur}
+               error={!!margenMayoristaInput.error}
+               helperText={margenMayoristaInput.error || "Margen para ventas mayoristas"}
              />
              <TextField
                fullWidth
                label="Margen Distribuidor (%)"
-               type="number"
-               value={newProductMargenDistribuidor === 0 ? '' : newProductMargenDistribuidor}
-               placeholder="0"
-               onChange={(e) => {
-                 const inputValue = e.target.value;
-                 if (inputValue === '') {
-                   setNewProductMargenDistribuidor(0);
-                 } else {
-                   const value = parseFloat(inputValue);
-                   if (!isNaN(value) && value >= 0 && value < 100) {
-                     setNewProductMargenDistribuidor(value);
-                   }
-                 }
-               }}
-               inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-               helperText="Margen para ventas a distribuidores"
+               value={margenDistribuidorInput.value}
+               onChange={margenDistribuidorInput.handleChange}
+               onBlur={margenDistribuidorInput.handleBlur}
+               error={!!margenDistribuidorInput.error}
+               helperText={margenDistribuidorInput.error || "Margen para ventas a distribuidores"}
              />
            </Box>
 
@@ -717,42 +735,38 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
              <TextField
                fullWidth
                label="Costo Etiqueta"
-               type="number"
-               value={newProductCostoEtiqueta === '0' ? '' : newProductCostoEtiqueta}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoEtiqueta(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de la etiqueta (opcional)"
+               value={costoEtiquetaInput.value}
+               onChange={costoEtiquetaInput.handleChange}
+               onBlur={costoEtiquetaInput.handleBlur}
+               error={!!costoEtiquetaInput.error}
+               helperText={costoEtiquetaInput.error || "Costo de la etiqueta (opcional)"}
              />
              <TextField
                fullWidth
                label="Costo Envase"
-               type="number"
-               value={newProductCostoEnvase === '0' ? '' : newProductCostoEnvase}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoEnvase(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo del envase (opcional)"
+               value={costoEnvaseInput.value}
+               onChange={costoEnvaseInput.handleChange}
+               onBlur={costoEnvaseInput.handleBlur}
+               error={!!costoEnvaseInput.error}
+               helperText={costoEnvaseInput.error || "Costo del envase (opcional)"}
              />
              <TextField
                fullWidth
                label="Costo Caja"
-               type="number"
-               value={newProductCostoCaja === '0' ? '' : newProductCostoCaja}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoCaja(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de la caja (opcional)"
+               value={costoCajaInput.value}
+               onChange={costoCajaInput.handleChange}
+               onBlur={costoCajaInput.handleBlur}
+               error={!!costoCajaInput.error}
+               helperText={costoCajaInput.error || "Costo de la caja (opcional)"}
              />
              <TextField
                fullWidth
                label="Costo Transporte"
-               type="number"
-               value={newProductCostoTransporte === '0' ? '' : newProductCostoTransporte}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoTransporte(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de transporte (requerido)"
+               value={costoTransporteInput.value}
+               onChange={costoTransporteInput.handleChange}
+               onBlur={costoTransporteInput.handleBlur}
+               error={!!costoTransporteInput.error}
+               helperText={costoTransporteInput.error || "Costo de transporte (requerido)"}
                required
              />
            </Box>
@@ -768,42 +782,38 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
              <TextField
                fullWidth
                label="Mano de Obra Directa"
-               type="number"
-               value={newProductCostoManoObra === '0' ? '' : newProductCostoManoObra}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoManoObra(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Costo de personal por unidad producida"
+               value={costoManoObraInput.value}
+               onChange={costoManoObraInput.handleChange}
+               onBlur={costoManoObraInput.handleBlur}
+               error={!!costoManoObraInput.error}
+               helperText={costoManoObraInput.error || "Costo de personal por unidad producida"}
              />
              <TextField
                fullWidth
                label="Energía y Servicios"
-               type="number"
-               value={newProductCostoEnergia === '0' ? '' : newProductCostoEnergia}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoEnergia(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Electricidad, agua, gas por unidad"
+               value={costoEnergiaInput.value}
+               onChange={costoEnergiaInput.handleChange}
+               onBlur={costoEnergiaInput.handleBlur}
+               error={!!costoEnergiaInput.error}
+               helperText={costoEnergiaInput.error || "Electricidad, agua, gas por unidad"}
              />
              <TextField
                fullWidth
                label="Depreciación de Equipos"
-               type="number"
-               value={newProductCostoDepreciacion === '0' ? '' : newProductCostoDepreciacion}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoDepreciacion(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Desgaste de maquinaria por unidad"
+               value={costoDepreciacionInput.value}
+               onChange={costoDepreciacionInput.handleChange}
+               onBlur={costoDepreciacionInput.handleBlur}
+               error={!!costoDepreciacionInput.error}
+               helperText={costoDepreciacionInput.error || "Desgaste de maquinaria por unidad"}
              />
              <TextField
                fullWidth
                label="Mantenimiento"
-               type="number"
-               value={newProductCostoMantenimiento === '0' ? '' : newProductCostoMantenimiento}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoMantenimiento(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Mantenimiento de equipos por unidad"
+               value={costoMantenimientoInput.value}
+               onChange={costoMantenimientoInput.handleChange}
+               onBlur={costoMantenimientoInput.handleBlur}
+               error={!!costoMantenimientoInput.error}
+               helperText={costoMantenimientoInput.error || "Mantenimiento de equipos por unidad"}
              />
            </Box>
 
@@ -818,32 +828,29 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
              <TextField
                fullWidth
                label="Gastos Administrativos"
-               type="number"
-               value={newProductCostoAdministrativo === '0' ? '' : newProductCostoAdministrativo}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoAdministrativo(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Oficina, personal administrativo por unidad"
+               value={costoAdministrativoInput.value}
+               onChange={costoAdministrativoInput.handleChange}
+               onBlur={costoAdministrativoInput.handleBlur}
+               error={!!costoAdministrativoInput.error}
+               helperText={costoAdministrativoInput.error || "Oficina, personal administrativo por unidad"}
              />
              <TextField
                fullWidth
                label="Comercialización"
-               type="number"
-               value={newProductCostoComercializacion === '0' ? '' : newProductCostoComercializacion}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoComercializacion(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Marketing, ventas, distribución por unidad"
+               value={costoComercializacionInput.value}
+               onChange={costoComercializacionInput.handleChange}
+               onBlur={costoComercializacionInput.handleBlur}
+               error={!!costoComercializacionInput.error}
+               helperText={costoComercializacionInput.error || "Marketing, ventas, distribución por unidad"}
              />
              <TextField
                fullWidth
                label="Costos Financieros"
-               type="number"
-               value={newProductCostoFinanciero === '0' ? '' : newProductCostoFinanciero}
-               placeholder="0"
-               onChange={(e) => setNewProductCostoFinanciero(e.target.value || '0')}
-               inputProps={{ min: 0, step: 0.01 }}
-               helperText="Intereses, préstamos por unidad (opcional)"
+               value={costoFinancieroInput.value}
+               onChange={costoFinancieroInput.handleChange}
+               onBlur={costoFinancieroInput.handleBlur}
+               error={!!costoFinancieroInput.error}
+               helperText={costoFinancieroInput.error || "Intereses, préstamos por unidad (opcional)"}
              />
            </Box>
 
@@ -943,27 +950,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
               <TextField
                 fullWidth
                 label="Porcentaje de IVA"
-                type="number"
-                value={editProductIvaPercentage ?? ''}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  if (inputValue === '') {
-                    setEditProductIvaPercentage(null);
-                  } else {
-                    const value = parseFloat(inputValue);
-                    if (!isNaN(value) && value >= 0 && value <= 100) {
-                      setEditProductIvaPercentage(value);
-                    }
-                  }
-                }}
-                onBlur={(e) => {
-                  const value = parseFloat(e.target.value);
-                  if (isNaN(value) || value < 0 || value > 100) {
-                    setEditProductIvaPercentage(21); // Default to 21% if invalid
-                  }
-                }}
-                inputProps={{ min: 0, max: 100, step: 0.01 }}
-                helperText="Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."
+                value={editIvaInput.value}
+                onChange={editIvaInput.handleChange}
+                onBlur={editIvaInput.handleBlur}
+                error={!!editIvaInput.error}
+                helperText={editIvaInput.error || "Ingrese el porcentaje de IVA (ej. 21 para 21%). Si deja vacío, se usará 21% por defecto."}
               />
             </CardContent>
           </Card>
@@ -975,62 +966,29 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
                 <TextField
                   fullWidth
                   label="Margen Público (%)"
-                  type="number"
-                  value={editProductMargenPublico === 0 ? '' : editProductMargenPublico}
-                  placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductMargenPublico(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0 && value < 100) {
-                        setEditProductMargenPublico(value);
-                      }
-                    }
-                  }}
-                  inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-                  helperText="Margen para ventas al público"
+                  value={editMargenPublicoInput.value}
+                  onChange={editMargenPublicoInput.handleChange}
+                  onBlur={editMargenPublicoInput.handleBlur}
+                  error={!!editMargenPublicoInput.error}
+                  helperText={editMargenPublicoInput.error || "Margen para ventas al público"}
                 />
                 <TextField
                   fullWidth
                   label="Margen Mayorista (%)"
-                  type="number"
-                  value={editProductMargenMayorista === 0 ? '' : editProductMargenMayorista}
-                  placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductMargenMayorista(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0 && value < 100) {
-                        setEditProductMargenMayorista(value);
-                      }
-                    }
-                  }}
-                  inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-                  helperText="Margen para ventas mayoristas"
+                  value={editMargenMayoristaInput.value}
+                  onChange={editMargenMayoristaInput.handleChange}
+                  onBlur={editMargenMayoristaInput.handleBlur}
+                  error={!!editMargenMayoristaInput.error}
+                  helperText={editMargenMayoristaInput.error || "Margen para ventas mayoristas"}
                 />
                 <TextField
                   fullWidth
                   label="Margen Distribuidor (%)"
-                  type="number"
-                  value={editProductMargenDistribuidor === 0 ? '' : editProductMargenDistribuidor}
-                  placeholder="0"
-                  onChange={(e) => {
-                    const inputValue = e.target.value;
-                    if (inputValue === '') {
-                      setEditProductMargenDistribuidor(0);
-                    } else {
-                      const value = parseFloat(inputValue);
-                      if (!isNaN(value) && value >= 0 && value < 100) {
-                        setEditProductMargenDistribuidor(value);
-                      }
-                    }
-                  }}
-                  inputProps={{ min: 0, max: 99.99, step: 0.01 }}
-                  helperText="Margen para ventas a distribuidores"
+                  value={editMargenDistribuidorInput.value}
+                  onChange={editMargenDistribuidorInput.handleChange}
+                  onBlur={editMargenDistribuidorInput.handleBlur}
+                  error={!!editMargenDistribuidorInput.error}
+                  helperText={editMargenDistribuidorInput.error || "Margen para ventas a distribuidores"}
                 />
               </Box>
             </CardContent>
