@@ -35,17 +35,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('access_token', response.access_token);
       setToken(response.access_token);
 
-      // For now, create a basic user object from the token
-      // In a real app, you might want to decode the JWT or fetch user details
-      const basicUser: User = {
-        id: 1, // This would come from the backend
-        username: credentials.username,
-        email: `${credentials.username}@example.com`, // This would come from the backend
-        role: 'user'
-      };
-
-      localStorage.setItem('user', JSON.stringify(basicUser));
-      setUser(basicUser);
+      // Fetch user details from backend
+      const userDetails = await apiService.getMe();
+      localStorage.setItem('user', JSON.stringify(userDetails));
+      setUser(userDetails);
     } catch (error) {
       throw error;
     } finally {

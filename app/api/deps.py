@@ -10,7 +10,7 @@ from ..models.user import User
 
 security = HTTPBearer()
 
-async def get_current_user_dependency(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> User:
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security), db: Session = Depends(get_db)) -> User:
     token = credentials.credentials
     user = get_current_user(token, db)
     if user is None:

@@ -1,0 +1,24 @@
+FROM node:20-bullseye
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    bash \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY package*.json ./
+
+RUN npm install --legacy-peer-deps
+
+RUN find node_modules/.bin -type f -exec chmod +x {} \;
+RUN npm install ajv ajv-keywords
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

@@ -80,6 +80,11 @@ class ApiService {
     return response.data;
   }
 
+  async getMe(): Promise<User> {
+    const response: AxiosResponse<User> = await this.api.get('/auth/me');
+    return response.data;
+  }
+
   // Material methods
   async getMaterials(skip: number = 0, limit: number = 100): Promise<Material[]> {
     const response: AxiosResponse<Material[]> = await this.api.get('/api/materials/', {
