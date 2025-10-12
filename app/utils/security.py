@@ -27,14 +27,12 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
     return encoded_jwt
 
-def verify_token(token: str) -> Optional[User]:
+def verify_token(token: str) -> Optional[str]:
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
         username: str = payload.get("sub")
         if username is None:
             return None
-        # Note: In full implementation, fetch user from DB here
-        # For now, return a dummy user structure
-        return UserOut(id=1, username=username, email="user@example.com", role="user")  # Placeholder
+        return username
     except JWTError:
         return None

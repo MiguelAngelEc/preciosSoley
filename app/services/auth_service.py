@@ -32,15 +32,15 @@ def authenticate_user(db: Session, username: str, password: str):
     return user
 
 def get_current_user(token: str, db: Session) -> User:
-    user = verify_token(token)
-    if not user:
+    username = verify_token(token)
+    if not username:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
     # Fetch full user from DB
-    db_user = db.query(User).filter(User.username == user.username).first()
+    db_user = db.query(User).filter(User.username == username).first()
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user

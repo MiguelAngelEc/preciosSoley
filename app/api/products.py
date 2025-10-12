@@ -2,6 +2,8 @@ from typing import List
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
+from app.api.deps import get_current_user
+
 
 from ..database import get_db
 from ..models.user import User
@@ -25,28 +27,11 @@ router = APIRouter(prefix="/api/products", tags=["products"])
 @router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
 def create_new_product(
     product: ProductCreate,
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     """Create a new product with associated materials"""
-    # For testing, get the first user
-    user = db.query(User).first()
-    if not user:
-        # Create a test user if none exists
-        from sqlalchemy import Column, String, Enum as SQLEnum
-        from ..models.user import Role
-        from ..utils.security import get_password_hash
-
-        test_user = User(
-            username="test",
-            email="test@test.com",
-            hashed_password=get_password_hash("test"),
-            role=Role.USER
-        )
-        db.add(test_user)
-        db.commit()
-        db.refresh(test_user)
-        user = test_user
-    result = create_product(db, product, user)
+    result = create_product(db, product, current_user)
     return result.model_dump()
 
 

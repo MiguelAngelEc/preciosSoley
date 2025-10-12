@@ -11,3 +11,5 @@ python-decouple==3.8
 psycopg2-binary==2.9.9
 pytest==7.4.3
 structlog==23.2.0
+pydantic[email]
+python-jose==3.3.0
