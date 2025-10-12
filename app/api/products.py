@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api/products", tags=["products"])
 
 
 @router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
-def create_new_product(
+async def create_new_product(
     product: ProductCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
