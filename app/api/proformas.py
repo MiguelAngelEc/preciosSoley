@@ -1,11 +1,10 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from ..database import get_db
 from ..models.user import User
 from ..schemas.proforma import (
-    ProformaCreate, ProformaResponse, ProformaListResponse
+    ProformaCreate, ProformaResponse
 )
 from ..services.proforma_service import (
     create_proforma, get_proforma, get_proformas, delete_proforma
@@ -24,7 +23,6 @@ def create_new_proforma(
     user = db.query(User).first()
     if not user:
         # Create a test user if none exists
-        from sqlalchemy import Column, String, Enum as SQLEnum
         from ..models.user import Role
         from ..utils.security import get_password_hash
 

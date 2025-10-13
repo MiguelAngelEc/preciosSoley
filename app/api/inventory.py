@@ -28,7 +28,6 @@ def create_new_inventory_entry(
     user = db.query(User).first()
     if not user:
         # Create a test user if none exists
-        from sqlalchemy import Column, String, Enum as SQLEnum
         from ..models.user import Role
         from ..utils.security import get_password_hash
 

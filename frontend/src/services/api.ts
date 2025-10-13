@@ -4,8 +4,6 @@ import {
   Material,
   MaterialCreate,
   MaterialUpdate,
-  CostosResponse,
-  CantidadQuery,
   LoginCredentials,
   RegisterData,
   AuthResponse,
@@ -22,7 +20,6 @@ import {
   InventoryUpdate,
   InventoryMovement,
   InventoryMovementCreate,
-  InventorySummary,
   InventoryDashboard
 } from '../types';
 
@@ -112,10 +109,6 @@ class ApiService {
     await this.api.delete(`/api/materials/${id}`);
   }
 
-  async calculateCosts(id: number, query: CantidadQuery): Promise<CostosResponse> {
-    const response: AxiosResponse<CostosResponse> = await this.api.post(`/api/materials/${id}/costos`, query);
-    return response.data;
-  }
 
   // Product methods
   async getProducts(skip: number = 0, limit: number = 100): Promise<Product[]> {
@@ -250,29 +243,7 @@ class ApiService {
     return response.data;
   }
 
-  async getLowStockAlerts(): Promise<InventorySummary[]> {
-    const response: AxiosResponse<InventorySummary[]> = await this.api.get('/api/inventory/low-stock');
-    return response.data;
-  }
 
-  async getInventoryByProduct(productId: number): Promise<InventorySummary[]> {
-    const response: AxiosResponse<InventorySummary[]> = await this.api.get(`/api/inventory/by-product/${productId}`);
-    return response.data;
-  }
-
-  async getDailyProductionReport(fecha?: string): Promise<Inventory[]> {
-    const params = fecha ? { fecha } : {};
-    const response: AxiosResponse<Inventory[]> = await this.api.get('/api/inventory/report/daily', { params });
-    return response.data;
-  }
-
-  async getPeriodReport(fechaInicio: string, fechaFin: string, productId?: number): Promise<Inventory[]> {
-    const params: any = { fecha_inicio: fechaInicio, fecha_fin: fechaFin };
-    if (productId) params.product_id = productId;
-
-    const response: AxiosResponse<Inventory[]> = await this.api.get('/api/inventory/report/period', { params });
-    return response.data;
-  }
 }
 
 // Create and export a singleton instance

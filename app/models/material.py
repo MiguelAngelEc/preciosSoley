@@ -1,6 +1,5 @@
 from enum import Enum
 from decimal import Decimal
-from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, Numeric, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship

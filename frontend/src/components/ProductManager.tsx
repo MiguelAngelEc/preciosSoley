@@ -21,7 +21,8 @@ import {
   MenuItem,
   FormControl,
   Card,
-  CardContent
+  CardContent,
+  CardHeader
 } from '@mui/material';
 import {
   Add,
@@ -938,8 +939,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
         <DialogTitle>Editar Producto</DialogTitle>
         <DialogContent>
           <Card sx={{ mb: 3 }}>
+            <CardHeader title="Información Básica" />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Información Básica</Typography>
               <TextField
                 fullWidth
                 label="Nombre del Producto"
@@ -960,8 +961,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           </Card>
   
           <Card sx={{ mb: 3 }}>
+            <CardHeader title="Márgenes de Ganancia" />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Márgenes de Ganancia</Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                   fullWidth
@@ -995,11 +996,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           </Card>
   
           <Card sx={{ mb: 3 }}>
+            <CardHeader
+              title="Costos de Empaque"
+              subheader="Costos asociados al empaquetado del producto"
+            />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Costos de Empaque</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Costos asociados al empaquetado del producto
-              </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                   fullWidth
@@ -1047,11 +1048,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           </Card>
 
           <Card sx={{ mb: 3 }}>
+            <CardHeader
+              title="Costos de Producción"
+              subheader="Costos directos del proceso de fabricación"
+            />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Costos de Producción</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Costos directos del proceso de fabricación
-              </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                   fullWidth
@@ -1098,11 +1099,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           </Card>
 
           <Card sx={{ mb: 3 }}>
+            <CardHeader
+              title="Gastos Operacionales"
+              subheader="Gastos administrativos y comerciales"
+            />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Gastos Operacionales</Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Gastos administrativos y comerciales
-              </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <TextField
                   fullWidth
@@ -1139,8 +1140,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           </Card>
   
           <Card sx={{ mb: 3 }}>
+            <CardHeader title="Información del Empaque" />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Información del Empaque</Typography>
               <FormControl fullWidth required>
                 <Select
                   value={editProductPesoEmpaque || ''}
@@ -1161,8 +1162,8 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
           </Card>
   
           <Card>
+            <CardHeader title="Materiales" />
             <CardContent>
-              <Typography variant="h6" gutterBottom>Materiales</Typography>
               {editProductMaterials.map((pm, index) => (
                 <Box key={index} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <FormControl sx={{ minWidth: 200, mr: 2 }}>
@@ -1181,7 +1182,7 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
                       ))}
                     </Select>
                   </FormControl>
-  
+
                   <TextField
                     label="Cantidad (g/ml)"
                     type="number"
@@ -1191,11 +1192,11 @@ const ProductManager: React.FC<ProductManagerProps> = ({ materials, onProductsCh
                     inputProps={{ min: 0, step: 0.01 }}
                     sx={{ mr: 2, width: 150 }}
                   />
-  
+
                   <Typography sx={{ mr: 2 }}>
                     Costo: ${pm.material_id && pm.cantidad ? calculateMaterialCost(pm.material_id, pm.cantidad).toFixed(2) : '0.00'}
                   </Typography>
-  
+
                   <IconButton onClick={() => removeEditProductMaterial(index)} color="error">
                     <Remove />
                   </IconButton>

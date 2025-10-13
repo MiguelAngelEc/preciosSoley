@@ -3,11 +3,8 @@ from typing import Optional
 
 import bcrypt
 from jose import JWTError, jwt
-from decimal import Decimal
 
 from ..config import settings
-from ..models.user import User
-from ..schemas.user import UserOut
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))

@@ -28,12 +28,6 @@ export interface MaterialUpdate {
   unidad_base?: 'kg' | 'litros';
 }
 
-export interface MaterialUpdate {
-  nombre?: string;
-  precio_base?: number | string;
-  unidad_base?: 'kg' | 'litros';
-}
-
 export interface CostosResponse {
   material: Material;
   costos: Record<string, string>;

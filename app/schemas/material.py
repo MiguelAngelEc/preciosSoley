@@ -2,7 +2,6 @@ from typing import Optional, List
 from decimal import Decimal
 from pydantic import BaseModel, field_validator
 
-from .user import Role
 
 from enum import Enum
 

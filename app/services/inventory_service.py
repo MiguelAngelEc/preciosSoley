@@ -1,10 +1,10 @@
 from typing import List, Optional
-from datetime import datetime, date
+from datetime import date
 from decimal import Decimal
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func, and_, or_
+from sqlalchemy import func, or_
 
 from ..models.inventory import Inventory, InventoryMovement
 from ..models.product import Product

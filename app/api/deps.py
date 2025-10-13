@@ -1,4 +1,3 @@
-from typing import Optional
 import logging
 
 from fastapi import Depends, HTTPException, status

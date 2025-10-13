@@ -1,5 +1,3 @@
-from typing import List
-from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session, joinedload
 from app.api.deps import get_current_user
@@ -10,8 +8,7 @@ from ..models.user import User
 from ..models.product import Product, ProductMaterial
 from ..schemas.product import (
     ProductCreate, ProductUpdate, ProductResponse,
-    ProductMaterialCreate, ProductMaterialResponse,
-    CostosTotalesResponse
+    ProductMaterialCreate
 )
 from ..services.product_service import (
     create_product, get_product, get_products, update_product, delete_product,

@@ -1,8 +1,6 @@
 from sqlalchemy import Column, String, Text, ForeignKey, Integer
-from sqlalchemy.orm import relationship
 
 from .base import BaseEntity
-from .user import User
 
 class AuditLog(BaseEntity):
     __tablename__ = "audit_logs"

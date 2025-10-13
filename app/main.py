@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.database import Base, engine
 from app.api import auth, materials, products, proformas, inventory
 # Import all models to ensure they are registered with SQLAlchemy
-from app.models import User, Material, Product, ProductMaterial, Proforma, ProformaItem, Inventory, InventoryMovement
 
 __all__ = ["app"]
 
