@@ -1,3 +1,3 @@
-from . import auth, materials, products, proformas, inventory
+from . import auth, materials, products, inventory
 
-__all__ = ["auth", "materials", "products", "proformas", "inventory"]
+__all__ = ["auth", "materials", "products", "inventory"]

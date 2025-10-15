@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
-from app.api import auth, materials, products, proformas, inventory
+from app.api import auth, materials, products, inventory
 # Import all models to ensure they are registered with SQLAlchemy
 
 __all__ = ["app"]
@@ -27,5 +27,4 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(materials.router)
 app.include_router(products.router)
-app.include_router(proformas.router)
 app.include_router(inventory.router)

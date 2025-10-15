@@ -20,7 +20,6 @@ import { useAuth } from '../contexts/AuthContext';
 import apiService from '../services/api';
 import { Material, Product } from '../types';
 import ProductManager from '../components/ProductManager';
-import ProformaManager from '../components/ProformaManager';
 import InventoryManager from '../components/InventoryManager';
 import MaterialManager from '../components/MaterialManager';
 
@@ -141,7 +140,6 @@ const Dashboard: React.FC = () => {
             <Tab label="Materiales" />
             <Tab label="Productos" />
             <Tab label="Inventario" />
-            <Tab label="Proformas" />
           </Tabs>
         </Box>
 
@@ -162,10 +160,6 @@ const Dashboard: React.FC = () => {
 
         {tabValue === 2 && (
           <InventoryManager products={products} onProductsChange={fetchProducts} />
-        )}
-
-        {tabValue === 3 && (
-          <ProformaManager products={products} />
         )}
       </Container>
     </Box>

@@ -17,8 +17,6 @@ class User(BaseEntity):
     hashed_password = Column(String, nullable=False)
     role = Column(SQLEnum(Role), default=Role.USER)
 
-    # Company information for proformas
-    nombre_empresa = Column(String, nullable=True)
     ruc = Column(String, nullable=True)
     direccion = Column(String, nullable=True)
     telefono = Column(String, nullable=True)
@@ -26,6 +24,5 @@ class User(BaseEntity):
 
     materials = relationship("Material", back_populates="user")
     products = relationship("Product", back_populates="user")
-    proformas = relationship("Proforma", back_populates="user")
     inventories = relationship("Inventory", back_populates="user")
     inventory_movements = relationship("InventoryMovement", back_populates="user")

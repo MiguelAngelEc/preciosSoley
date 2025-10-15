@@ -1,6 +1,6 @@
 # Precios Soley - Gestión de Materiales y Productos
 
-Un sistema completo de gestión para jabonería que permite administrar materiales, productos, inventario y proformas con cálculos automáticos de costos, márgenes y precios.
+Un sistema completo de gestión para jabonería que permite administrar materiales, productos e inventario con cálculos automáticos de costos, márgenes y precios.
 
 ## 📋 Descripción del Proyecto
 
@@ -9,7 +9,6 @@ Este proyecto es una aplicación full-stack desarrollada para la gestión integr
 - **Gestión de Materiales**: Registro y cálculo de costos de materias primas
 - **Gestión de Productos**: Creación de productos con fórmulas complejas y cálculos automáticos de precios
 - **Control de Inventario**: Seguimiento de stock, movimientos y alertas de bajo inventario
-- **Sistema de Proformas**: Generación de cotizaciones para clientes con diferentes tipos de precios
 - **Autenticación**: Sistema seguro de login y registro de usuarios
 
 ## 🚀 Características Principales
@@ -55,13 +54,6 @@ Este proyecto es una aplicación full-stack desarrollada para la gestión integr
 - Reportes diarios y por períodos
 - Dashboard con métricas clave
 
-#### Sistema de Proformas
-- Generación automática de números de proforma
-- Información completa del cliente
-- Selección de productos con cantidades
-- Cálculos automáticos de subtotales, IVA y totales
-- Validez configurable (15 días por defecto)
-- Tipos de cliente con precios diferenciados
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -176,10 +168,6 @@ npm start
    - Monitorear stock y alertas
    - Registrar movimientos
 
-4. **Generar Proformas**
-   - Seleccionar productos y cantidades
-   - Ingresar datos del cliente
-   - Generar cotización
 
 ## 📚 API Documentation
 
@@ -211,10 +199,6 @@ La documentación completa de la API está disponible en:
 - `POST /api/inventory/{id}/movements` - Registrar movimiento
 - `GET /api/inventory/summary` - Dashboard de inventario
 
-#### Proformas
-- `GET /api/proformas/` - Listar proformas
-- `POST /api/proformas/` - Crear proforma
-- `GET /api/proformas/{id}` - Ver proforma detallada
 
 ## 🧪 Testing
 
@@ -278,8 +262,6 @@ El proyecto utiliza PostgreSQL con las siguientes tablas principales:
 - `materials` - Materias primas
 - `products` - Productos finales
 - `product_materials` - Relación producto-material
-- `proformas` - Cotizaciones
-- `proforma_items` - Items de proforma
 - `inventories` - Entradas de inventario
 - `inventory_movements` - Movimientos de stock
 
@@ -308,7 +290,6 @@ Para soporte técnico o preguntas:
 - ✅ Gestión CRUD de materiales
 - ✅ Gestión CRUD de productos con cálculos de costos
 - ✅ Sistema de inventario básico
-- ✅ Generación de proformas
 - ✅ Interfaz frontend completa
 - ✅ API RESTful documentada
 
