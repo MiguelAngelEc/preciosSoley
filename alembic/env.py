@@ -20,6 +20,7 @@ target_metadata = Base.metadata
 
 # Load settings
 from app.config import settings
+# Use the database URL from settings, but override alembic config
 config.set_main_option("sqlalchemy.url", settings.database_url)
 
 def run_migrations_offline() -> None:

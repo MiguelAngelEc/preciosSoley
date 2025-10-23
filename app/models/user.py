@@ -26,3 +26,4 @@ class User(BaseEntity):
     products = relationship("Product", back_populates="user")
     inventories = relationship("Inventory", back_populates="user")
     inventory_movements = relationship("InventoryMovement", back_populates="user")
+    inventory_egresos = relationship("InventoryEgreso", back_populates="user")

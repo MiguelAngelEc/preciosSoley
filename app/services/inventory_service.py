@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import func, or_
 
 from ..models.inventory import Inventory, InventoryMovement
+from ..models.inventory_egreso import InventoryEgreso
 from ..models.product import Product
 from ..models.user import User
 from ..schemas.inventory import (
@@ -202,6 +203,18 @@ def delete_inventory(db: Session, inventory_id: int, user: User) -> bool:
             detail="Inventory entry not found"
         )
 
+    # Check if inventory has any egresses
+    egress_count = db.query(func.count(InventoryEgreso.id)).filter(
+        InventoryEgreso.inventory_id == inventory_id,
+        InventoryEgreso.user_id == user.id
+    ).scalar() or 0
+
+    if egress_count > 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Cannot delete inventory with existing egresses. Please delete all egresses first."
+        )
+
     # Soft delete
     inventory.is_active = False
     db.commit()
@@ -329,13 +342,6 @@ def get_inventory_summary(db: Session, user: User) -> InventoryDashboardResponse
         Inventory.is_active == True
     ).scalar() or 0
 
-    # Get total inventory value
-    total_value_result = db.query(func.sum(Inventory.stock_actual * Inventory.costo_unitario)).filter(
-        Inventory.user_id == user.id,
-        Inventory.is_active == True
-    ).scalar()
-    total_inventory_value = total_value_result or Decimal('0')
-
     # Get low stock count
     low_stock_count = db.query(func.count(Inventory.id)).filter(
         Inventory.user_id == user.id,
@@ -353,35 +359,24 @@ def get_inventory_summary(db: Session, user: User) -> InventoryDashboardResponse
     ).scalar()
     today_production = today_production_result or Decimal('0')
 
-    # Get recent movements (last 10)
-    recent_movements = db.query(InventoryMovement).filter(
-        InventoryMovement.user_id == user.id
-    ).order_by(InventoryMovement.created_at.desc()).limit(10).all()
+    # Get today's egresses (quantity and value)
+    today_egresos_result = db.query(
+        func.sum(InventoryEgreso.cantidad),
+        func.sum(InventoryEgreso.valor_total)
+    ).filter(
+        InventoryEgreso.user_id == user.id,
+        func.date(InventoryEgreso.fecha_egreso) == today
+    ).first()
 
-    recent_movements_response = [
-        InventoryMovementResponse(
-            id=movement.id,
-            user_id=movement.user_id,
-            inventory_id=movement.inventory_id,
-            tipo_movimiento=movement.tipo_movimiento,
-            cantidad=movement.cantidad,
-            motivo=movement.motivo,
-            referencia=movement.referencia,
-            stock_anterior=movement.stock_anterior,
-            stock_posterior=movement.stock_posterior,
-            usuario_responsable=movement.usuario_responsable,
-            created_at=movement.created_at,
-            movimiento_display=movement.movimiento_display
-        )
-        for movement in recent_movements
-    ]
+    today_egresos = today_egresos_result[0] or Decimal('0')
+    today_egresos_value = today_egresos_result[1] or Decimal('0')
 
     return InventoryDashboardResponse(
         total_products=total_products,
-        total_inventory_value=total_inventory_value,
         low_stock_count=low_stock_count,
         today_production=today_production,
-        recent_movements=recent_movements_response
+        today_egresos=today_egresos,
+        today_egresos_value=today_egresos_value
     )
 
 

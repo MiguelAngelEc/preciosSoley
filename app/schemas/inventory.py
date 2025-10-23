@@ -196,10 +196,10 @@ class InventorySummaryResponse(BaseModel):
 
 class InventoryDashboardResponse(BaseModel):
     total_products: int
-    total_inventory_value: Decimal
     low_stock_count: int
     today_production: Decimal
-    recent_movements: List[InventoryMovementResponse]
+    today_egresos: Decimal
+    today_egresos_value: Decimal
 
     class Config:
         from_attributes = True

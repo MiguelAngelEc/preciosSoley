@@ -16,7 +16,7 @@ function useDecimalInput(
   const {
     min = 0,
     max,
-    step = 0.01,
+    // step = 0.01,
     decimals = 2,
     required = false,
     allowZero = true

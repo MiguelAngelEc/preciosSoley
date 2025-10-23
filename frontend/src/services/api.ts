@@ -17,7 +17,10 @@ import {
   InventoryUpdate,
   InventoryMovement,
   InventoryMovementCreate,
-  InventoryDashboard
+  InventoryDashboard,
+  InventoryEgreso,
+  InventoryEgresoCreate,
+  InventoryEgresoUpdate
 } from '../types';
 
 // API Configuration
@@ -216,6 +219,47 @@ class ApiService {
 
   async getInventorySummary(): Promise<InventoryDashboard> {
     const response: AxiosResponse<InventoryDashboard> = await this.api.get('/api/inventory/summary');
+    return response.data;
+  }
+
+  // Inventory Egreso methods
+  async createEgreso(inventoryId: number, egreso: InventoryEgresoCreate): Promise<InventoryEgreso> {
+    const response: AxiosResponse<InventoryEgreso> = await this.api.post(`/api/inventory/egresos/${inventoryId}`, egreso);
+    return response.data;
+  }
+
+  async updateEgreso(egresoId: number, egreso: InventoryEgresoUpdate): Promise<InventoryEgreso> {
+    const response: AxiosResponse<InventoryEgreso> = await this.api.put(`/api/inventory/egresos/${egresoId}`, egreso);
+    return response.data;
+  }
+
+  async deleteEgreso(egresoId: number): Promise<void> {
+    await this.api.delete(`/api/inventory/egresos/${egresoId}`);
+  }
+
+  async getInventoryEgresos(inventoryId: number, skip: number = 0, limit: number = 100): Promise<InventoryEgreso[]> {
+    const response: AxiosResponse<InventoryEgreso[]> = await this.api.get(
+      `/api/inventory/egresos/inventory/${inventoryId}`,
+      { params: { skip, limit } }
+    );
+    return response.data;
+  }
+
+  async getEgresosReport(filters?: {
+    fecha_desde?: string;
+    fecha_hasta?: string;
+    tipo_cliente?: 'publico' | 'mayorista' | 'distribuidor';
+  }, skip: number = 0, limit: number = 100): Promise<InventoryEgreso[]> {
+    const params = new URLSearchParams({
+      skip: skip.toString(),
+      limit: limit.toString()
+    });
+
+    if (filters?.fecha_desde) params.append('fecha_desde', filters.fecha_desde);
+    if (filters?.fecha_hasta) params.append('fecha_hasta', filters.fecha_hasta);
+    if (filters?.tipo_cliente) params.append('tipo_cliente', filters.tipo_cliente);
+
+    const response: AxiosResponse<InventoryEgreso[]> = await this.api.get(`/api/inventory/egresos/report?${params}`);
     return response.data;
   }
 

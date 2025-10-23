@@ -24,7 +24,11 @@ import { useMaterials } from '../hooks/useMaterials';
 import { Material } from '../types';
 import useDecimalInput from '../hooks/useDecimalInput';
 
-const MaterialManager: React.FC = () => {
+interface MaterialManagerProps {
+  onMaterialsChange?: () => void;
+}
+
+const MaterialManager: React.FC<MaterialManagerProps> = ({ onMaterialsChange }) => {
   const { materials, loading, error, success, createMaterial, updateMaterial, deleteMaterial } = useMaterials();
 
   const [formData, setFormData] = useState({
@@ -61,6 +65,10 @@ const MaterialManager: React.FC = () => {
     });
     setFormData({ nombre: '' });
     precioBaseInput.reset(0);
+    // Notify parent component to refresh materials
+    if (onMaterialsChange) {
+      await onMaterialsChange();
+    }
   };
 
   const handleEdit = (material: Material) => {
@@ -90,6 +98,10 @@ const MaterialManager: React.FC = () => {
     setEditingId(null);
     setEditFormData({ nombre: '' });
     editPrecioBaseInput.reset(0);
+    // Notify parent component to refresh materials
+    if (onMaterialsChange) {
+      await onMaterialsChange();
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -97,6 +109,10 @@ const MaterialManager: React.FC = () => {
       return;
     }
     await deleteMaterial(id);
+    // Notify parent component to refresh materials
+    if (onMaterialsChange) {
+      await onMaterialsChange();
+    }
   };
 
   const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

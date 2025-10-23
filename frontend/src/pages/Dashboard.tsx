@@ -33,15 +33,7 @@ const Dashboard: React.FC = () => {
   const [productsError, setProductsError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadMaterials = async () => {
-      try {
-        const data = await apiService.getMaterials();
-        setMaterials(data);
-      } catch (err) {
-        // ignore
-      }
-    };
-    loadMaterials();
+    fetchMaterials();
     fetchProducts();
   }, []);
 
@@ -55,6 +47,15 @@ const Dashboard: React.FC = () => {
     }
   }, [productsError]);
 
+
+  const fetchMaterials = async () => {
+    try {
+      const data = await apiService.getMaterials();
+      setMaterials(data);
+    } catch (err) {
+      // ignore
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -144,7 +145,7 @@ const Dashboard: React.FC = () => {
         </Box>
 
         {tabValue === 0 && (
-          <MaterialManager />
+          <MaterialManager onMaterialsChange={fetchMaterials} />
         )}
 
         {tabValue === 1 && (

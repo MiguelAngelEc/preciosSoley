@@ -23,6 +23,7 @@ class Inventory(BaseEntity):
     user = relationship("User", back_populates="inventories")
     product = relationship("Product", back_populates="inventories")
     inventory_movements = relationship("InventoryMovement", back_populates="inventory", cascade="all, delete-orphan")
+    inventory_egresos = relationship("InventoryEgreso", back_populates="inventory", cascade="all, delete-orphan")
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

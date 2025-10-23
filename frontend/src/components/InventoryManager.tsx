@@ -37,7 +37,8 @@ import {
   SwapHoriz,
   Warning,
   CheckCircle,
-  Info
+  Info,
+  ReceiptLong
 } from '@mui/icons-material';
 import apiService from '../services/api';
 import {
@@ -47,6 +48,9 @@ import {
   InventoryMovement,
   InventoryMovementCreate,
   InventoryDashboard,
+  InventoryEgreso,
+  InventoryEgresoCreate,
+  InventoryEgresoUpdate,
   Product
 } from '../types';
 
@@ -124,10 +128,30 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
     referencia: ''
   });
 
-  // Movement history state
+  // Movement history state (kept for reference but not used in dashboard)
   const [movementHistory, setMovementHistory] = useState<InventoryMovement[]>([]);
   const [showHistoryDialog, setShowHistoryDialog] = useState(false);
   const [historyInventory, setHistoryInventory] = useState<Inventory | null>(null);
+
+  // Egreso state
+  const [showEgresoDialog, setShowEgresoDialog] = useState(false);
+  const [egresoInventory, setEgresoInventory] = useState<Inventory | null>(null);
+  const [newEgreso, setNewEgreso] = useState<InventoryEgresoCreate>({
+    cantidad: '',
+    tipo_cliente: 'publico',
+    motivo: '',
+    referencia: '',
+    usuario_responsable: 'Usuario'
+  });
+
+  // Egreso history state
+  const [egresosHistory, setEgresosHistory] = useState<InventoryEgreso[]>([]);
+  const [showEgresosDialog, setShowEgresosDialog] = useState(false);
+  const [egresosInventory, setEgresosInventory] = useState<Inventory | null>(null);
+
+  // Edit egreso state
+  const [editingEgreso, setEditingEgreso] = useState<InventoryEgreso | null>(null);
+  const [editEgreso, setEditEgreso] = useState<InventoryEgresoUpdate>({});
 
   // Filters
   const [productFilter, setProductFilter] = useState<number | ''>('');
@@ -334,14 +358,121 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
     }
   };
 
-  const handleViewMovements = async (inventory: Inventory) => {
+  const handleViewEgresos = async (inventory: Inventory) => {
     try {
-      const movements = await apiService.getInventoryMovements(inventory.id);
-      setMovementHistory(movements);
-      setHistoryInventory(inventory);
-      setShowHistoryDialog(true);
+      const egresos = await apiService.getInventoryEgresos(inventory.id);
+      setEgresosHistory(egresos);
+      setEgresosInventory(inventory);
+      setShowEgresosDialog(true);
     } catch (err: any) {
       setError(extractErrorMessage(err));
+    }
+  };
+
+  const handleCreateEgreso = async () => {
+    if (!egresoInventory || !newEgreso.cantidad || !newEgreso.tipo_cliente) {
+      setError('Todos los campos son requeridos');
+      return;
+    }
+
+    const cantidad = parseInt(newEgreso.cantidad);
+    if (isNaN(cantidad) || cantidad <= 0 || !Number.isInteger(cantidad)) {
+      setError('La cantidad debe ser un número entero positivo');
+      return;
+    }
+
+    // Validate stock availability
+    const stockActual = parseFloat(egresoInventory.stock_actual);
+    if (cantidad > stockActual) {
+      setError(`Stock insuficiente. Disponible: ${stockActual.toFixed(0)} unidades`);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await apiService.createEgreso(egresoInventory.id, {
+        ...newEgreso,
+        cantidad: cantidad.toString()
+      });
+
+      setShowEgresoDialog(false);
+      setEgresoInventory(null);
+      setNewEgreso({
+        cantidad: '',
+        tipo_cliente: 'publico',
+        motivo: '',
+        referencia: '',
+        usuario_responsable: 'Usuario'
+      });
+      setError(null);
+      setSuccess('Egreso registrado exitosamente');
+      await fetchInventories();
+      await fetchDashboard();
+    } catch (err: any) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditEgreso = (egreso: InventoryEgreso) => {
+    setEditingEgreso(egreso);
+    setEditEgreso({
+      cantidad: egreso.cantidad,
+      tipo_cliente: egreso.tipo_cliente,
+      motivo: egreso.motivo || '',
+      referencia: egreso.referencia || '',
+      usuario_responsable: egreso.usuario_responsable
+    });
+  };
+
+  const handleSaveEditEgreso = async () => {
+    if (!editingEgreso) return;
+
+    try {
+      setLoading(true);
+      await apiService.updateEgreso(editingEgreso.id, editEgreso);
+      setEditingEgreso(null);
+      setEditEgreso({});
+      setError(null);
+      setSuccess('Egreso actualizado exitosamente');
+
+      // Refresh egresos history if dialog is open
+      if (showEgresosDialog && egresosInventory) {
+        await handleViewEgresos(egresosInventory);
+      }
+
+      await fetchInventories();
+      await fetchDashboard();
+    } catch (err: any) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteEgreso = async (egresoId: number) => {
+    if (!window.confirm('¿Está seguro de que desea eliminar este egreso? El stock será devuelto al inventario.')) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await apiService.deleteEgreso(egresoId);
+      setError(null);
+      setSuccess('Egreso eliminado exitosamente');
+
+      // Refresh egresos history if dialog is open
+      if (showEgresosDialog && egresosInventory) {
+        await handleViewEgresos(egresosInventory);
+      }
+
+      await fetchInventories();
+      await fetchDashboard();
+    } catch (err: any) {
+      setError(extractErrorMessage(err));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -404,10 +535,20 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
           <Card sx={{ flex: '1 1 250px' }}>
             <CardContent>
               <Typography color="textSecondary" gutterBottom>
-                Valor Total Inventario
+                Egresos Hoy (Cantidad)
               </Typography>
               <Typography variant="h4">
-                ${parseFloat(dashboard.total_inventory_value).toFixed(2)}
+                {parseFloat(dashboard.today_egresos).toFixed(0)} unidades
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card sx={{ flex: '1 1 250px' }}>
+            <CardContent>
+              <Typography color="textSecondary" gutterBottom>
+                Valor Egresos Hoy
+              </Typography>
+              <Typography variant="h4" color="success.main">
+                ${parseFloat(dashboard.today_egresos_value).toFixed(2)}
               </Typography>
             </CardContent>
           </Card>
@@ -550,23 +691,23 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
                   <TableCell>{inventory.ubicacion || '-'}</TableCell>
                   <TableCell align="center">
                     <IconButton
-                      onClick={() => handleViewMovements(inventory)}
+                      onClick={() => handleViewEgresos(inventory)}
                       color="info"
                       size="small"
-                      title="Ver movimientos"
+                      title="Ver egresos"
                     >
-                      <InventoryIcon />
+                      <ReceiptLong />
                     </IconButton>
                     <IconButton
                       onClick={() => {
-                        setMovementInventory(inventory);
-                        setShowMovementDialog(true);
+                        setEgresoInventory(inventory);
+                        setShowEgresoDialog(true);
                       }}
                       color="primary"
                       size="small"
-                      title="Registrar movimiento"
+                      title="Registrar egreso"
                     >
-                      <SwapHoriz />
+                      <TrendingDown />
                     </IconButton>
                     <IconButton
                       onClick={() => handleEditInventory(inventory)}
@@ -755,24 +896,24 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
         </DialogActions>
       </Dialog>
 
-      {/* Stock Movement Dialog */}
-      <Dialog open={showMovementDialog} onClose={() => setShowMovementDialog(false)} maxWidth="sm" fullWidth>
+      {/* Create Egreso Dialog */}
+      <Dialog open={showEgresoDialog} onClose={() => setShowEgresoDialog(false)} maxWidth="sm" fullWidth>
         <DialogTitle>
-          Registrar Movimiento de Stock
-          {movementInventory && ` - ${movementInventory.product?.nombre}`}
+          Registrar Egreso
+          {egresoInventory && ` - ${egresoInventory.product?.nombre}`}
         </DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
             <FormControl fullWidth required>
-              <InputLabel>Tipo de Movimiento</InputLabel>
+              <InputLabel>Tipo de Cliente</InputLabel>
               <Select
-                value={newMovement.tipo_movimiento}
-                onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, tipo_movimiento: e.target.value as any }))}
-                label="Tipo de Movimiento"
+                value={newEgreso.tipo_cliente}
+                onChange={(e) => setNewEgreso((prev: InventoryEgresoCreate) => ({ ...prev, tipo_cliente: e.target.value as any }))}
+                label="Tipo de Cliente"
               >
-                <MenuItem value="entrada">Entrada (+)</MenuItem>
-                <MenuItem value="salida">Salida (-)</MenuItem>
-                <MenuItem value="ajuste">Ajuste</MenuItem>
+                <MenuItem value="publico">Venta al Público</MenuItem>
+                <MenuItem value="mayorista">Venta por Mayor</MenuItem>
+                <MenuItem value="distribuidor">Venta a Distribuidor</MenuItem>
               </Select>
             </FormControl>
 
@@ -780,48 +921,50 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
               fullWidth
               label="Cantidad (unidades)"
               type="number"
-              value={newMovement.cantidad}
-              onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, cantidad: e.target.value }))}
+              value={newEgreso.cantidad}
+              onChange={(e) => setNewEgreso((prev: InventoryEgresoCreate) => ({ ...prev, cantidad: e.target.value }))}
               required
               inputProps={{ min: 0, step: 1 }}
             />
 
             <TextField
               fullWidth
-              label="Motivo"
-              value={newMovement.motivo}
-              onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, motivo: e.target.value }))}
-              required
+              label="Motivo del Egreso"
+              value={newEgreso.motivo}
+              onChange={(e) => setNewEgreso((prev: InventoryEgresoCreate) => ({ ...prev, motivo: e.target.value }))}
+              multiline
+              rows={2}
+              placeholder="Ej: Venta, muestra, donación"
             />
 
             <TextField
               fullWidth
-              label="Referencia (opcional)"
-              value={newMovement.referencia}
-              onChange={(e) => setNewMovement((prev: InventoryMovementCreate) => ({ ...prev, referencia: e.target.value }))}
-              placeholder="Número de proforma, orden, etc."
+              label="Referencia"
+              value={newEgreso.referencia}
+              onChange={(e) => setNewEgreso((prev: InventoryEgresoCreate) => ({ ...prev, referencia: e.target.value }))}
+              placeholder="Número de factura, orden, etc."
             />
 
-            {movementInventory && (
+            {egresoInventory && (
               <Alert severity="info">
-                Stock actual: {parseFloat(movementInventory.stock_actual).toFixed(0)} unidades
+                Stock actual disponible: {parseFloat(egresoInventory.stock_actual).toFixed(0)} unidades
               </Alert>
             )}
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowMovementDialog(false)}>Cancelar</Button>
-          <Button onClick={handleRegisterMovement} variant="contained" disabled={loading}>
-            Registrar Movimiento
+          <Button onClick={() => setShowEgresoDialog(false)}>Cancelar</Button>
+          <Button onClick={handleCreateEgreso} variant="contained" disabled={loading}>
+            Registrar Egreso
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Movement History Dialog */}
-      <Dialog open={showHistoryDialog} onClose={() => setShowHistoryDialog(false)} maxWidth="md" fullWidth>
+      {/* Egresos History Dialog */}
+      <Dialog open={showEgresosDialog} onClose={() => setShowEgresosDialog(false)} maxWidth="lg" fullWidth>
         <DialogTitle>
-          Historial de Movimientos
-          {historyInventory && ` - ${historyInventory.product?.nombre} (Lote: ${historyInventory.lote || 'N/A'})`}
+          Historial de Egresos
+          {egresosInventory && ` - ${egresosInventory.product?.nombre} (Lote: ${egresosInventory.lote || 'N/A'})`}
         </DialogTitle>
         <DialogContent>
           <TableContainer component={Paper}>
@@ -829,36 +972,60 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
               <TableHead>
                 <TableRow>
                   <TableCell><strong>Fecha</strong></TableCell>
-                  <TableCell><strong>Tipo</strong></TableCell>
+                  <TableCell><strong>Tipo Cliente</strong></TableCell>
                   <TableCell align="right"><strong>Cantidad</strong></TableCell>
-                  <TableCell align="right"><strong>Stock Anterior</strong></TableCell>
-                  <TableCell align="right"><strong>Stock Posterior</strong></TableCell>
+                  <TableCell align="right"><strong>Precio Unitario</strong></TableCell>
+                  <TableCell align="right"><strong>Valor Total</strong></TableCell>
                   <TableCell><strong>Motivo</strong></TableCell>
+                  <TableCell><strong>Referencia</strong></TableCell>
                   <TableCell><strong>Responsable</strong></TableCell>
+                  <TableCell align="center"><strong>Acciones</strong></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {movementHistory.length === 0 ? (
+                {egresosHistory.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      No hay movimientos registrados
+                    <TableCell colSpan={9} align="center">
+                      No hay egresos registrados para este producto
                     </TableCell>
                   </TableRow>
                 ) : (
-                  movementHistory.map((movement) => (
-                    <TableRow key={movement.id}>
-                      <TableCell>{new Date(movement.created_at).toLocaleString()}</TableCell>
+                  egresosHistory.map((egreso) => (
+                    <TableRow key={egreso.id}>
+                      <TableCell>{new Date(egreso.fecha_egreso).toLocaleString()}</TableCell>
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {getMovementIcon(movement.tipo_movimiento)}
-                          {movement.movimiento_display}
-                        </Box>
+                        <Chip
+                          label={egreso.tipo_cliente_display}
+                          size="small"
+                          color={egreso.tipo_cliente === 'publico' ? 'primary' : egreso.tipo_cliente === 'mayorista' ? 'secondary' : 'success'}
+                        />
                       </TableCell>
-                      <TableCell align="right">{parseFloat(movement.cantidad).toFixed(0)} unidades</TableCell>
-                      <TableCell align="right">{parseFloat(movement.stock_anterior).toFixed(0)} unidades</TableCell>
-                      <TableCell align="right">{parseFloat(movement.stock_posterior).toFixed(0)} unidades</TableCell>
-                      <TableCell>{movement.motivo}</TableCell>
-                      <TableCell>{movement.usuario_responsable}</TableCell>
+                      <TableCell align="right">{parseFloat(egreso.cantidad).toFixed(0)} unidades</TableCell>
+                      <TableCell align="right">${parseFloat(egreso.precio_unitario).toFixed(2)}</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>
+                        ${parseFloat(egreso.valor_total).toFixed(2)}
+                      </TableCell>
+                      <TableCell>{egreso.motivo || '-'}</TableCell>
+                      <TableCell>{egreso.referencia || '-'}</TableCell>
+                      <TableCell>{egreso.usuario_responsable}</TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          onClick={() => handleEditEgreso(egreso)}
+                          color="secondary"
+                          size="small"
+                          title="Editar egreso"
+                        >
+                          <Edit />
+                        </IconButton>
+                        <IconButton
+                          onClick={() => handleDeleteEgreso(egreso.id)}
+                          color="error"
+                          size="small"
+                          title="Eliminar egreso"
+                        >
+                          <Delete />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -867,7 +1034,64 @@ const InventoryManager: React.FC<InventoryManagerProps> = ({ products, onProduct
           </TableContainer>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowHistoryDialog(false)}>Cerrar</Button>
+          <Button onClick={() => setShowEgresosDialog(false)}>Cerrar</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Edit Egreso Dialog */}
+      <Dialog open={!!editingEgreso} onClose={() => { setEditingEgreso(null); setEditEgreso({}); }} maxWidth="sm" fullWidth>
+        <DialogTitle>Editar Egreso</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
+            <FormControl fullWidth required>
+              <InputLabel>Tipo de Cliente</InputLabel>
+              <Select
+                value={editEgreso.tipo_cliente || ''}
+                onChange={(e) => setEditEgreso((prev: InventoryEgresoUpdate) => ({ ...prev, tipo_cliente: e.target.value as any }))}
+                label="Tipo de Cliente"
+              >
+                <MenuItem value="publico">Venta al Público</MenuItem>
+                <MenuItem value="mayorista">Venta por Mayor</MenuItem>
+                <MenuItem value="distribuidor">Venta a Distribuidor</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
+              fullWidth
+              label="Cantidad (unidades)"
+              type="number"
+              value={editEgreso.cantidad || ''}
+              onChange={(e) => setEditEgreso((prev: InventoryEgresoUpdate) => ({ ...prev, cantidad: e.target.value }))}
+              required
+              inputProps={{ min: 0, step: 1 }}
+            />
+
+            <TextField
+              fullWidth
+              label="Motivo del Egreso"
+              value={editEgreso.motivo || ''}
+              onChange={(e) => setEditEgreso((prev: InventoryEgresoUpdate) => ({ ...prev, motivo: e.target.value }))}
+              multiline
+              rows={2}
+            />
+
+            <TextField
+              fullWidth
+              label="Referencia"
+              value={editEgreso.referencia || ''}
+              onChange={(e) => setEditEgreso((prev: InventoryEgresoUpdate) => ({ ...prev, referencia: e.target.value }))}
+            />
+
+            <Alert severity="warning">
+              Si cambia la cantidad, el stock del inventario se ajustará automáticamente
+            </Alert>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => { setEditingEgreso(null); setEditEgreso({}); }}>Cancelar</Button>
+          <Button onClick={handleSaveEditEgreso} variant="contained" disabled={loading}>
+            Guardar Cambios
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

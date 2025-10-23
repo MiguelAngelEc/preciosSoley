@@ -3,12 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import Base, engine
 from app.api import auth, materials, products, inventory
+from app.api.endpoints import inventory_egresos
 # Import all models to ensure they are registered with SQLAlchemy
 
 __all__ = ["app"]
 
-# Create all tables
-Base.metadata.create_all(bind=engine)
+# Create all tables (commented out for production - use Alembic migrations)
+# Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Precios Soley API",
@@ -28,3 +29,4 @@ app.include_router(auth.router)
 app.include_router(materials.router)
 app.include_router(products.router)
 app.include_router(inventory.router)
+app.include_router(inventory_egresos.router)

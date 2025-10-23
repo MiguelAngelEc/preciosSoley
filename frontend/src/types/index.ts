@@ -270,10 +270,46 @@ export interface InventorySummary {
 
 export interface InventoryDashboard {
   total_products: number;
-  total_inventory_value: string;
   low_stock_count: number;
   today_production: string;
-  recent_movements: InventoryMovement[];
+  today_egresos: string;
+  today_egresos_value: string;
+}
+
+// Inventory Egreso Types
+export interface InventoryEgreso {
+  id: number;
+  user_id: number;
+  inventory_id: number;
+  product_id: number;
+  cantidad: string;
+  tipo_cliente: 'publico' | 'mayorista' | 'distribuidor';
+  precio_unitario: string;
+  valor_total: string;
+  fecha_egreso: string;
+  motivo?: string;
+  referencia?: string;
+  usuario_responsable: string;
+  created_at: string;
+  updated_at?: string;
+  product_nombre?: string;
+  tipo_cliente_display: string;
+}
+
+export interface InventoryEgresoCreate {
+  cantidad: string;
+  tipo_cliente: 'publico' | 'mayorista' | 'distribuidor';
+  motivo?: string;
+  referencia?: string;
+  usuario_responsable: string;
+}
+
+export interface InventoryEgresoUpdate {
+  cantidad?: string;
+  tipo_cliente?: 'publico' | 'mayorista' | 'distribuidor';
+  motivo?: string;
+  referencia?: string;
+  usuario_responsable?: string;
 }
 
 // Component Props Types
